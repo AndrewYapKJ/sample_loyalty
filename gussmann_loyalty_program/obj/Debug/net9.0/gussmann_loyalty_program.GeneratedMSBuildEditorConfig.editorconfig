@@ -32,16 +32,16 @@ build_property.EnableCodeStyleSeverity =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9BcHAucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Layout/AuthenticatedPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvQXV0aGVudGljYXRlZFBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Layout/EmptyLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvRW1wdHlMYXlvdXQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Layout/LoginLayout.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTG9naW5MYXlvdXQucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Pages/AdminLogin.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9BZG1pbkxvZ2luLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Pages/Appointments.razor]
@@ -56,12 +56,12 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9DdXN0b21lcnMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Pages/Error.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9FcnJvci5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
 [/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Pages/Home.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Ib21lLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9Mb2dpbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Pages/LoyaltyAccounts.razor]
@@ -74,10 +74,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Pages/Members.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9NZW1iZXJzLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Pages/MinimalLogin.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9NaW5pbWFsTG9naW4ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Pages/NotFound.razor]
@@ -119,7 +115,3 @@ build_metadata.AdditionalFiles.CssScope = b-gmnwr40ua5
 [/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Components/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9MYXlvdXQvTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-u8ehakxh0a
-
-[/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/Views/Login/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3MvTG9naW4vSW5kZXguY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 

@@ -234,6 +234,4 @@
 /Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/obj/Debug/net9.0/compressed/frhogy8had-vjljdmpwz3.gz
 /Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/obj/Debug/net9.0/compressed/wzc3dci2vb-vjljdmpwz3.gz
 /Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/bin/Debug/net9.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
-/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/obj/Debug/net9.0/gussmann_loyalty_program.RazorAssemblyInfo.cache
-/Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/obj/Debug/net9.0/gussmann_loyalty_program.RazorAssemblyInfo.cs
 /Volumes/REPO/GUSSMANN/loyalty_software/gussmann_loyalty_program/obj/Debug/net9.0/compressed/el9r583b4d-brvzl845k7.gz

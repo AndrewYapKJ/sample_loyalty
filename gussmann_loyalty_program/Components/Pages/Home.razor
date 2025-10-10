@@ -206,7 +206,7 @@ else
 
          if (string.IsNullOrEmpty(token))
          {
-            Navigation.NavigateTo("/admin", true);
+            Navigation.NavigateTo("/", true);
             return;
          }
 
@@ -214,13 +214,13 @@ else
 
          if (!isAuthenticated)
          {
-            Navigation.NavigateTo("/admin", true);
+            Navigation.NavigateTo("/", true);
          }
       }
       catch (Exception ex)
       {
          Console.WriteLine($"Authentication error: {ex.Message}");
-         Navigation.NavigateTo("/admin", true);
+         Navigation.NavigateTo("/", true);
       }
    }
 
@@ -231,11 +231,11 @@ else
          await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "jwtToken");
          await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "refreshToken");
          await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "adminLoggedIn");
-         Navigation.NavigateTo("/admin", true);
+         Navigation.NavigateTo("/", true);
       }
       catch
       {
-         Navigation.NavigateTo("/admin", true);
+         Navigation.NavigateTo("/", true);
       }
    }
 

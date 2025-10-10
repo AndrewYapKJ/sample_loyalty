@@ -1,0 +1,283 @@
+@page "/"
+@layout gussmann_loyalty_program.Components.Layout.LoginLayout
+@using gussmann_loyalty_program.Services
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject ISimpleAuthService AuthService
+@inject ILogger<Login> Logger
+@rendermode InteractiveServer
+
+<PageTitle>Gussmann Loyalty Program - Login</PageTitle>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #1e4a3b 0%, #2d5e4e 100%);
+        min-height: 100vh;
+    }
+
+    .login-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .login-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .brand-logo {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .brand-logo h1 {
+        color: #1e4a3b;
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        margin-bottom: 0.5rem;
+    }
+
+    .brand-logo p {
+        color: #2d5e4e;
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: border-color 0.15s ease-in-out;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #2d5e4e;
+        box-shadow: 0 0 0 3px rgba(45, 94, 78, 0.1);
+    }
+
+    .form-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e1e5e9;
+        border-radius: 8px;
+        font-size: 1rem;
+        background-color: white;
+        transition: border-color 0.15s ease-in-out;
+        box-sizing: border-box;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: #2d5e4e;
+        box-shadow: 0 0 0 3px rgba(45, 94, 78, 0.1);
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        background: linear-gradient(135deg, #1e4a3b 0%, #2d5e4e 100%);
+        border: none;
+        border-radius: 8px;
+        color: white;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+    }
+
+    .btn-login:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-login:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .alert {
+        padding: 0.75rem 1rem;
+        border-radius: 6px;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .alert-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    .alert-success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .spinner-border {
+        width: 1rem;
+        height: 1rem;
+        border: 2px solid currentColor;
+        border-right-color: transparent;
+        border-radius: 50%;
+        animation: spinner-border 0.75s linear infinite;
+        display: inline-block;
+        margin-right: 0.5rem;
+    }
+
+    @@keyframes spinner-border {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<div class="login-container">
+    <div class="login-card">
+        <div class="brand-logo">
+            <h1>🎯 Gussmann</h1>
+            <p>Loyalty Program Management</p>
+        </div>
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger">@errorMessage</div>
+        }
+
+        @if (!string.IsNullOrEmpty(successMessage))
+        {
+            <div class="alert alert-success">@successMessage</div>
+        }
+
+        <form @onsubmit="HandleLogin" @onsubmit:preventDefault="true">
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" @bind="loginModel.Username" class="form-control" 
+                       placeholder="Enter username" required disabled="@isLoading" />
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" @bind="loginModel.Password" class="form-control" 
+                       placeholder="Enter password" required disabled="@isLoading" />
+            </div>
+
+            <button type="submit" class="btn-login" disabled="@isLoading">
+                @if (isLoading)
+                {
+                    <span class="spinner-border"></span>
+                    <span>Signing In...</span>
+                }
+                else
+                {
+                    <span>Sign In</span>
+                }
+            </button>
+        </form>
+    </div>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
+    private bool isLoading = false;
+
+    private async Task HandleLogin()
+    {
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+        isLoading = true;
+
+        try
+        {
+            if (string.IsNullOrWhiteSpace(loginModel.Username) || 
+                string.IsNullOrWhiteSpace(loginModel.Password))
+            {
+                errorMessage = "Please fill in all fields.";
+                return;
+            }
+
+            var result = await AuthService.LoginAsync(loginModel.Username, loginModel.Password);
+
+            if (result.Success)
+            {
+                // Store tokens and role information from database
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "jwtToken", result.AccessToken);
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "refreshToken", result.RefreshToken);
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "userRole", result.Admin?.Role ?? "staff");
+                await JSRuntime.InvokeVoidAsync("localStorage.setItem", "adminInfo", System.Text.Json.JsonSerializer.Serialize(new
+                {
+                    id = result.Admin?.Id,
+                    username = result.Admin?.Username,
+                    email = result.Admin?.Email,
+                    fullName = result.Admin?.FullName,
+                    role = result.Admin?.Role
+                }));
+
+                successMessage = "Login successful! Redirecting...";
+                StateHasChanged();
+
+                await Task.Delay(1000);
+                
+                // Redirect based on role from database
+                string redirectUrl = result.Admin?.Role switch
+                {
+                    "admin" => "/dashboard",
+                    "principal" => "/dashboard", 
+                    "teacher" => "/dashboard",
+                    "staff" => "/dashboard",
+                    _ => "/dashboard"
+                };
+                
+                Navigation.NavigateTo(redirectUrl, true);
+            }
+            else
+            {
+                errorMessage = result.Message ?? "Invalid credentials. Please try again.";
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error during login");
+            errorMessage = "An error occurred during login. Please try again.";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private class LoginModel
+    {
+        public string Username { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+}
