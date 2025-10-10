@@ -1,0 +1,211 @@
+@page "/transactions"
+@using gussmann_loyalty_program.Models
+@using gussmann_loyalty_program.Services
+@inject LoyaltyService LoyaltyService
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+<PageTitle>Transactions - Gussmann Loyalty Program</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Transactions</h1>
+    <button class="btn btn-primary" @onclick="ShowAddTransactionModal">
+        <span class="bi bi-plus-circle"></span> Add Transaction
+    </button>
+</div>
+
+@if (customers != null && customers.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Transaction #</th>
+                    <th>Customer</th>
+                    <th>Amount</th>
+                    <th>Points Earned</th>
+                    <th>Store</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var customer in customers)
+                {
+                    @foreach (var transaction in customer.Transactions.OrderByDescending(t => t.TransactionDate))
+                    {
+                        <tr>
+                            <td>@transaction.TransactionNumber</td>
+                            <td>
+                                <div>
+                                    <strong>@customer.FirstName @customer.LastName</strong><br />
+                                    <small class="text-muted">@customer.Email</small>
+                                </div>
+                            </td>
+                            <td class="text-end">@transaction.Amount.ToString("C")</td>
+                            <td class="text-end text-success">
+                                <strong>@transaction.PointsEarned.ToString("N0")</strong>
+                            </td>
+                            <td>@transaction.Store</td>
+                            <td>@transaction.TransactionDate.ToString("MM/dd/yyyy HH:mm")</td>
+                            <td>
+                                <span class="badge @(transaction.IsProcessed ? "bg-success" : "bg-warning")">
+                                    @(transaction.IsProcessed ? "Processed" : "Pending")
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="text-center py-5">
+        <h4 class="text-muted">No transactions found</h4>
+        <p class="text-muted">Get started by adding your first transaction.</p>
+        <button class="btn btn-primary" @onclick="ShowAddTransactionModal">
+            <span class="bi bi-plus-circle"></span> Add Your First Transaction
+        </button>
+    </div>
+}
+
+<!-- Add Transaction Modal -->
+@if (showModal)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Transaction</h5>
+                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
+                </div>
+                <div class="modal-body">
+                    <EditForm Model="currentTransaction" OnValidSubmit="SaveTransaction">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary class="text-danger" />
+
+                        <div class="mb-3">
+                            <label class="form-label">Customer Email</label>
+                            <InputText class="form-control" @bind-Value="customerEmail" placeholder="Enter customer email" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Purchase Amount</label>
+                            <InputNumber class="form-control" @bind-Value="currentTransaction.Amount" step="0.01" />
+                            <ValidationMessage For="@(() => currentTransaction.Amount)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Store</label>
+                            <InputText class="form-control" @bind-Value="currentTransaction.Store" placeholder="Store name or location" />
+                            <ValidationMessage For="@(() => currentTransaction.Store)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <InputText class="form-control" @bind-Value="currentTransaction.Description" placeholder="Transaction description" />
+                        </div>
+
+                        <div class="alert alert-info">
+                            <strong>Points Calculation:</strong><br />
+                            Points will be calculated automatically at 1 point per dollar spent.<br />
+                            Amount: @currentTransaction.Amount.ToString("C") = @CalculatePoints(currentTransaction.Amount).ToString("N0") points
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
+                            <button type="submit" class="btn btn-primary" disabled="@isProcessing">
+                                @if (isProcessing)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                }
+                                Add Transaction
+                            </button>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Customer> customers = new();
+    private Transaction currentTransaction = new();
+    private string customerEmail = string.Empty;
+    private bool showModal = false;
+    private bool isProcessing = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTransactions();
+    }
+
+    private async Task LoadTransactions()
+    {
+        customers = await LoyaltyService.GetAllCustomersAsync();
+    }
+
+    private void ShowAddTransactionModal()
+    {
+        currentTransaction = new Transaction();
+        customerEmail = string.Empty;
+        showModal = true;
+    }
+
+    private async Task SaveTransaction()
+    {
+        isProcessing = true;
+        try
+        {
+            // Find customer by email
+            var customer = await LoyaltyService.GetCustomerByEmailAsync(customerEmail);
+            if (customer == null)
+            {
+                await JSRuntime.InvokeVoidAsync("alert", "Customer not found with that email address.");
+                return;
+            }
+
+            // Set customer ID and calculate points
+            currentTransaction.CustomerId = customer.Id;
+            currentTransaction.PointsEarned = CalculatePoints(currentTransaction.Amount);
+            currentTransaction.IsProcessed = true;
+
+            // Save transaction
+            await LoyaltyService.CreateTransactionAsync(currentTransaction);
+
+            // Add points to loyalty account
+            await LoyaltyService.AddPointsAsync(customer.Id, currentTransaction.PointsEarned, 
+                $"Purchase transaction {currentTransaction.TransactionNumber}");
+
+            await LoadTransactions();
+            CloseModal();
+
+            await JSRuntime.InvokeVoidAsync("alert", 
+                $"Transaction added successfully! {customer.FirstName} {customer.LastName} earned {currentTransaction.PointsEarned:N0} points.");
+        }
+        catch (Exception ex)
+        {
+            await JSRuntime.InvokeVoidAsync("alert", $"Error saving transaction: {ex.Message}");
+        }
+        finally
+        {
+            isProcessing = false;
+        }
+    }
+
+    private void CloseModal()
+    {
+        showModal = false;
+        currentTransaction = new();
+        customerEmail = string.Empty;
+    }
+
+    private decimal CalculatePoints(decimal amount)
+    {
+        // Simple calculation: 1 point per dollar
+        return Math.Floor(amount);
+    }
+}

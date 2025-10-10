@@ -1,0 +1,72 @@
+@page "/appointments"
+@using gussmann_loyalty_program.Services
+@using gussmann_loyalty_program.Models
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject ISimpleAuthService AuthService
+@rendermode InteractiveServer
+
+<PageTitle>Appointments - Gussmann Loyalty Program</PageTitle>
+
+@if (!isAuthenticated)
+{
+   <!-- Show nothing, redirect will happen -->
+}
+else
+{
+   <div class="container-fluid">
+      <div class="row mb-4">
+         <div class="col">
+            <h1 class="display-5">
+               <i class="bi bi-calendar-check text-info me-3"></i>
+               Appointments
+            </h1>
+            <p class="lead text-muted">Manage customer appointments and bookings</p>
+         </div>
+      </div>
+
+      <div class="alert alert-info" role="alert">
+         <i class="bi bi-info-circle me-2"></i>
+         <strong>Coming Soon:</strong> Appointment management system is being developed.
+      </div>
+   </div>
+}
+
+@code {
+   private bool isAuthenticated = false;
+
+   protected override async Task OnAfterRenderAsync(bool firstRender)
+   {
+      if (firstRender)
+      {
+         await CheckAuthentication();
+         StateHasChanged();
+      }
+   }
+
+   private async Task CheckAuthentication()
+   {
+      try
+      {
+         var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "jwtToken");
+
+         if (string.IsNullOrEmpty(token))
+         {
+            Navigation.NavigateTo("/admin", true);
+            return;
+         }
+
+         isAuthenticated = await AuthService.ValidateTokenAsync(token);
+
+         if (!isAuthenticated)
+         {
+            Navigation.NavigateTo("/admin", true);
+         }
+      }
+      catch (Exception ex)
+      {
+         Console.WriteLine($"Authentication error: {ex.Message}");
+         Navigation.NavigateTo("/admin", true);
+      }
+   }
+}
