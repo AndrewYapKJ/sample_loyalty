@@ -1,0 +1,299 @@
+@page "/dashboard"
+@using gussmann_loyalty_program.Services
+@using gussmann_loyalty_program.Models
+@using Microsoft.AspNetCore.Components
+@inject NewLoyaltyService LoyaltyService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject ISimpleAuthService AuthService
+@rendermode InteractiveServer
+
+<PageTitle>Dashboard - Gussmann Loyalty Program</PageTitle>
+
+@if (!isAuthenticated)
+{
+   <!-- Show nothing, redirect will happen -->
+}
+else
+{
+   <div class="container-fluid">
+      <div class="row mb-4">
+         <div class="col">
+            <h1 class="display-4">🎯 Loyalty Program Dashboard</h1>
+            <p class="lead">Welcome back! Here's your comprehensive overview</p>
+         </div>
+         <div class="col-auto">
+            <button class="btn btn-outline-danger" @onclick="HandleLogout">
+               <i class="bi bi-box-arrow-right me-2"></i>Logout
+            </button>
+         </div>
+      </div>
+
+      <div class="row g-4 mb-4">
+         <!-- Members Card -->
+         <div class="col-md-3">
+            <div class="card bg-primary text-white h-100">
+               <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                     <div>
+                        <h5 class="card-title">Total Members</h5>
+                        <h2 class="display-6">@totalUsers</h2>
+                        <small>@activeUsers active</small>
+                     </div>
+                     <div class="align-self-center">
+                        <i class="bi bi-people-fill fs-1"></i>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <!-- Stores Card -->
+         <div class="col-md-3">
+            <div class="card bg-success text-white h-100">
+               <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                     <div>
+                        <h5 class="card-title">Active Stores</h5>
+                        <h2 class="display-6">@totalStores</h2>
+                     </div>
+                     <div class="align-self-center">
+                        <i class="bi bi-shop fs-1"></i>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <!-- Loyalty Points Card -->
+         <div class="col-md-3">
+            <div class="card bg-warning text-white h-100">
+               <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                     <div>
+                        <h5 class="card-title">Total Points</h5>
+                        <h2 class="display-6">@totalLoyaltyPoints.ToString("N0")</h2>
+                     </div>
+                     <div class="align-self-center">
+                        <i class="bi bi-gem fs-1"></i>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <!-- Membership Tiers Card -->
+         <div class="col-md-3">
+            <div class="card bg-info text-white h-100">
+               <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                     <div>
+                        <h5 class="card-title">Membership Tiers</h5>
+                        <h2 class="display-6">@totalTiers</h2>
+                        <small>available tiers</small>
+                     </div>
+                     <div class="align-self-center">
+                        <i class="bi bi-trophy fs-1"></i>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <div class="row g-4">
+         <!-- Quick Stats -->
+         <div class="col-md-6">
+            <div class="card h-100">
+               <div class="card-header">
+                  <h5 class="card-title mb-0">Quick Stats</h5>
+               </div>
+               <div class="card-body">
+                  <div class="row g-3">
+                     <div class="col-12">
+                        <div class="border rounded p-3">
+                           <div class="d-flex justify-content-between">
+                              <span>Total Points Issued</span>
+                              <strong>@totalPointsIssued.ToString("N0")</strong>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="col-12">
+                        <div class="border rounded p-3">
+                           <div class="d-flex justify-content-between">
+                              <span>Total Points Redeemed</span>
+                              <strong>@totalPointsRedeemed.ToString("N0")</strong>
+                           </div>
+                        </div>
+                     </div>
+                     <div class="col-12">
+                        <div class="border rounded p-3">
+                           <div class="d-flex justify-content-between">
+                              <span>Total Referrals</span>
+                              <strong>@totalReferrals</strong>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <!-- System Information -->
+         <div class="col-md-6">
+            <div class="card h-100">
+               <div class="card-header">
+                  <h5 class="card-title mb-0">System Information</h5>
+               </div>
+               <div class="card-body">
+                  <p><strong>Database:</strong> Comprehensive Loyalty System</p>
+                  <p><strong>Framework:</strong> .NET 9 Blazor Server</p>
+                  <p><strong>Entities:</strong> 30+ loyalty management entities</p>
+                  <p><strong>Status:</strong> <span class="badge bg-success">Active</span></p>
+
+                  <div class="mt-4">
+                     <h6>Available Features:</h6>
+                     <ul class="list-unstyled">
+                        <li><i class="bi bi-check-circle text-success"></i> Member Management</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Store Management</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Loyalty Points Tracking</li>
+                        <li><i class="bi bi-check-circle text-success"></i> Membership Tiers</li>
+                        <li><i class="bi bi-clock text-warning"></i> Appointment Scheduling</li>
+                        <li><i class="bi bi-clock text-warning"></i> Rewards & Redemptions</li>
+                     </ul>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+}
+
+@code {
+   private bool isAuthenticated = false;
+   private string? errorMessage = null;
+   private int totalUsers = 0;
+   private int activeUsers = 0;
+   private int totalStores = 0;
+   private int totalLoyaltyPoints = 0;
+   private int totalTiers = 0;
+   private int totalPointsIssued = 0;
+   private int totalPointsRedeemed = 0;
+   private int totalReferrals = 0;
+   private int pointsRedeemedThisMonth = 0;
+   private int totalRedemptions = 0;
+   private List<User> recentMembers = new();
+   private List<Redemption> recentRedemptions = new();
+
+   protected override async Task OnAfterRenderAsync(bool firstRender)
+   {
+      if (firstRender)
+      {
+         await CheckAuthentication();
+         if (isAuthenticated)
+         {
+            await LoadDashboardData();
+         }
+         StateHasChanged();
+      }
+   }
+
+   private async Task CheckAuthentication()
+   {
+      try
+      {
+         var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "jwtToken");
+
+         if (string.IsNullOrEmpty(token))
+         {
+            Navigation.NavigateTo("/", true);
+            return;
+         }
+
+         isAuthenticated = await AuthService.ValidateTokenAsync(token);
+
+         if (!isAuthenticated)
+         {
+            Navigation.NavigateTo("/", true);
+         }
+      }
+      catch (Exception ex)
+      {
+         Console.WriteLine($"Authentication error: {ex.Message}");
+         Navigation.NavigateTo("/", true);
+      }
+   }
+
+   private async Task HandleLogout()
+   {
+      try
+      {
+         await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "jwtToken");
+         await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "refreshToken");
+         await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "adminLoggedIn");
+         Navigation.NavigateTo("/", true);
+      }
+      catch
+      {
+         Navigation.NavigateTo("/", true);
+      }
+   }
+
+   private async Task LoadDashboardData()
+   {
+      try
+      {
+         // Use demo data while database issues are being resolved
+         totalUsers = 1250;
+         activeUsers = 1180;
+         totalStores = 8;
+         totalLoyaltyPoints = 450000;
+         pointsRedeemedThisMonth = 32000;
+         totalRedemptions = 2850;
+
+         // Demo recent activity
+         recentMembers = new List<User>
+{
+new User { Id = "1", FullName = "Sarah Johnson", Email = "sarah.j@email.com", RegistrationDate =
+DateTime.Now.AddDays(-2), TotalPoints = 2500 },
+new User { Id = "2", FullName = "Michael Chen", Email = "m.chen@email.com", RegistrationDate = DateTime.Now.AddDays(-1),
+TotalPoints = 1800 },
+new User { Id = "3", FullName = "Emma Williams", Email = "emma.w@email.com", RegistrationDate =
+DateTime.Now.AddHours(-6), TotalPoints = 950 }
+};
+
+         recentRedemptions = new List<Redemption>
+{
+new Redemption
+{
+Id = "1",
+User = new User { FullName = "David Lee" },
+Reward = new Reward { Name = "Free Coffee" },
+PointsRedeemed = 500,
+RedemptionDate = DateTime.Now.AddHours(-2),
+Status = "Completed"
+},
+new Redemption
+{
+Id = "2",
+User = new User { FullName = "Lisa Park" },
+Reward = new Reward { Name = "20% Discount" },
+PointsRedeemed = 750,
+RedemptionDate = DateTime.Now.AddHours(-4),
+Status = "Completed"
+}
+};
+
+         Console.WriteLine("Dashboard data loaded successfully (demo mode)");
+      }
+      catch (Exception ex)
+      {
+         errorMessage = $"Error loading dashboard data: {ex.Message}";
+         Console.WriteLine($"Error loading dashboard data: {ex.Message}");
+      }
+      finally
+      {
+         StateHasChanged();
+      }
+   }
+}
