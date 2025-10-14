@@ -17,7 +17,13 @@ try
 {
     // Get the solution root directory
     var currentDir = Directory.GetCurrentDirectory();
-    var solutionRoot = currentDir; // Already in the solution root when running from project
+    
+    // If we're in the AppHost directory, go up two levels to reach the solution root
+    var solutionRoot = currentDir;
+    if (currentDir.EndsWith("App.AppHost"))
+    {
+        solutionRoot = Path.GetFullPath(Path.Combine(currentDir, "../.."));
+    }
     
     Console.WriteLine($"Current directory: {currentDir}");
     Console.WriteLine($"Solution root: {solutionRoot}");

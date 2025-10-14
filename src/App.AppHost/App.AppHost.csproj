@@ -1,5 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
+  <ItemGroup>
+    <ProjectReference Include="..\App.Frontend\App.Frontend.csproj" />
+    <ProjectReference Include="..\App.Api\App.Api.csproj" />
+    <ProjectReference Include="..\App.Database\App.Database.csproj" />
+    <ProjectReference Include="..\App.Model\App.Model.csproj" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>

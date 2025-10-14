@@ -14,6 +14,8 @@ namespace App.Common.Extensions
             var issuer = configuration["Jwt:Issuer"] ?? "GussmannLoyaltyProgram";
             var audience = configuration["Jwt:Audience"] ?? "GussmannLoyaltyUsers";
 
+            var key = Encoding.UTF8.GetBytes(secretKey);
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
