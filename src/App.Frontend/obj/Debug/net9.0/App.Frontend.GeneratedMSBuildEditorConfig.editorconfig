@@ -92,10 +92,6 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9TdG9yZXMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Volumes/REPO/GUSSMANN/loyalty_software/src/App.Frontend/Components/Pages/TestDashboard.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9UZXN0RGFzaGJvYXJkLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
 [/Volumes/REPO/GUSSMANN/loyalty_software/src/App.Frontend/Components/Pages/Transactions.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50cy9QYWdlcy9UcmFuc2FjdGlvbnMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 

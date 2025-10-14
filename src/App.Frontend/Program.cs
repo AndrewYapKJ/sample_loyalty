@@ -13,14 +13,15 @@ builder.Services.AddRazorComponents()
 
 // Add Entity Framework
 builder.Services.AddDbContext<NewLoyaltyDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly("App.Database")));
 
 // Add JWT Authentication
 builder.Services.AddJwtAuthentication(builder.Configuration);
 
 // Add application services
 builder.Services.AddScoped<NewLoyaltyService>();
-builder.Services.AddScoped<ISimpleAuthService, SimpleAuthService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Add HTTP Client for API calls
 builder.Services.AddHttpClient();
