@@ -463,3 +463,45 @@ appsettings.Staging.json
 
 # Legacy project reference
 /gussmann_loyalty_program
+
+# Additional .NET build artifacts
+**/*.dll
+**/*.pdb
+**/*.exe
+**/*.deps.json
+**/*.runtimeconfig.json
+**/*.runtimeconfig.dev.json
+
+# Assembly info files
+**/AssemblyInfo.cs
+**/AssemblyInfoInputs.cache
+
+# Project references and cache
+**/*.csproj.AssemblyReference.cache
+**/*.AssemblyInfoInputs.cache
+
+# Razor cache files
+**/*.razor.json
+**/*.dswa.cache.json
+
+# More specific cache patterns
+**/rjsmcshtml.dswa.cache.json
+**/rjsmrazor.dswa.cache.json
+
+# Reference assemblies
+**/ref/*.dll
+**/refint/*.dll
+
+# NuGet packages (if not using package restore)
+**/packages/*
+!**/packages/build/
+!**/packages/repositories.config
+
+# Temporary ASP.NET files
+**/Temporary ASP.NET Files/
+
+# IIS logs
+**/iisexpress/
+
+# Azure artifacts
+**/PublishProfiles/
