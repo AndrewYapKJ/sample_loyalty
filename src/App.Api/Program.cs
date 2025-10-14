@@ -1,4 +1,5 @@
 using App.Common.Extensions;
+using App.Api.Services;
 using gussmann_loyalty_program.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,9 +11,13 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<NewLoyaltyDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
+        b => b.MigrationsAssembly("App.Database")));
 
 builder.Services.AddJwtAuthentication(builder.Configuration);
+
+// Add authentication service
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 
 var app = builder.Build();
 

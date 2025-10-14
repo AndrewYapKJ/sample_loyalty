@@ -88,3 +88,4 @@
 /Volumes/REPO/GUSSMANN/loyalty_software/src/App.Api/obj/Debug/net9.0/App.Api.pdb
 /Volumes/REPO/GUSSMANN/loyalty_software/src/App.Api/obj/Debug/net9.0/App.Api.genruntimeconfig.cache
 /Volumes/REPO/GUSSMANN/loyalty_software/src/App.Api/obj/Debug/net9.0/ref/App.Api.dll
+/Volumes/REPO/GUSSMANN/loyalty_software/src/App.Api/bin/Debug/net9.0/BCrypt.Net-Next.dll
