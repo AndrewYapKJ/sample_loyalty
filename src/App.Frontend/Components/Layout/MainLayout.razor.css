@@ -1,99 +1,123 @@
-.page {
-    position: relative;
+/* Standard Web App Layout - Clean and Simple */
+:root {
+    --primary-green: #1e4a3b;
+    --accent-gold: #ffd700;
+    --dark-green: #0f2419;
+    --light-green: #2d6a4f;
+    --white: #ffffff;
+    --light-gray: #f8f9fa;
+    --sidebar-width: 280px;
+    --sidebar-collapsed-width: 70px;
+    --transition: 0.3s ease;
+    --topbar-height: 56px;
+}
+
+/* Page Container - Flexbox Layout */
+.app-root {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
 
-main {
-    flex: 1;
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: var(--white);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
 }
 
-.sidebar {
-    background: linear-gradient(180deg, #667eea 0%, #764ba2 50%, #667eea 100%);
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-}
-
-.top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
-    justify-content: flex-end;
-    height: 3.5rem;
+.topbar-inner {
     display: flex;
     align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
 }
 
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-        text-decoration: none;
-    }
-
-    .top-row ::deep a:hover, .top-row ::deep .btn-link:hover {
-        text-decoration: underline;
-    }
-
-    .top-row ::deep a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-@media (max-width: 640.98px) {
-    .top-row {
-        justify-content: space-between;
-    }
-
-    .top-row ::deep a, .top-row ::deep .btn-link {
-        margin-left: 0;
-    }
+.sidebar-toggle {
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
 }
 
-@media (min-width: 641px) {
+.brand {
+    font-weight: 600;
+    color: var(--primary-green);
+}
+
+.page {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: calc(100vh - var(--topbar-height));
+    background-color: var(--light-gray);
+    align-items: stretch; /* ensure sidebar and main stretch equally */
+}
+
+/* Sidebar - Fixed Width */
+.sidebar {
+    width: var(--sidebar-width);
+    background: linear-gradient(180deg, var(--primary-green) 0%, var(--dark-green) 100%);
+    transition: width var(--transition);
+    flex-shrink: 0;
+    overflow-x: hidden;
+}
+
+/* Prevent sidebar from pushing page vertically; allow scrolling inside the sidebar */
+.sidebar {
+    max-height: calc(100vh - var(--topbar-height));
+    overflow-y: auto;
+}
+
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+}
+
+/* Main Content - Takes Remaining Space */
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--light-gray);
+}
+
+.content {
+    flex: 1 1 auto;
+    padding: 1.5rem 2rem;
+    overflow-y: auto;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
     .page {
-        flex-direction: row;
+        flex-direction: column;
+        min-height: auto;
     }
 
     .sidebar {
-        width: 250px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
+        width: 100%;
+        height: auto;
+        order: 1;
+        position: relative;
     }
 
-    .top-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
+    .main {
+        order: 2;
+        width: 100%;
     }
 
-    .top-row.auth ::deep a:first-child {
-        flex: 1;
-        text-align: right;
-        width: 0;
-    }
-
-    .top-row, article {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
+    .content {
+        padding: 1rem;
     }
 }
 
-#blazor-error-ui {
-    color-scheme: light only;
-    background: lightyellow;
-    bottom: 0;
-    box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
-    box-sizing: border-box;
-    display: none;
-    left: 0;
-    padding: 0.6rem 1.25rem 0.7rem 1.25rem;
-    position: fixed;
-    width: 100%;
-    z-index: 1000;
-}
-
-    #blazor-error-ui .dismiss {
-        cursor: pointer;
-        position: absolute;
-        right: 0.75rem;
-        top: 0.5rem;
+/* Print Styles */
+@media print {
+    .sidebar {
+        display: none;
     }
+    
+    .main {
+        width: 100%;
+    }
+}

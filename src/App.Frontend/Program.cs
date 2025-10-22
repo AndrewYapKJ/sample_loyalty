@@ -1,7 +1,6 @@
-using gussmann_loyalty_program.Components;
+using App.Common.Extensions;
 using gussmann_loyalty_program.Data;
 using gussmann_loyalty_program.Services;
-using App.Common.Extensions;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +8,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-
 
 // Add Entity Framework
 builder.Services.AddDbContext<NewLoyaltyDbContext>(options =>
@@ -32,23 +30,17 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
-// Add authentication and authorization middleware
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.UseAntiforgery();
-
 app.MapStaticAssets();
 
-// Map Blazor components FIRST (higher priority)
+// Map Blazor components
 app.MapRazorComponents<gussmann_loyalty_program.Components.App>()
     .AddInteractiveServerRenderMode();
-
 
 app.Run();

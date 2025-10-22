@@ -1,17 +1,32 @@
 ﻿@inherits LayoutComponentBase
+@implements IDisposable
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
+<div class="app-root">
+    <header class="topbar" role="banner">
+        <div class="topbar-inner">
+            <button class="sidebar-toggle" aria-expanded="@(isCollapsed ? "false" : "true")"
+                @onclick="() => HandleSidebarToggle(!isCollapsed)">
+                <span class="sr-only">Toggle sidebar</span>
+                <span class="icon">☰</span>
+            </button>
+            <div class="brand">My App</div>
+            <div class="topbar-actions">
+                <!-- place for user avatar / actions -->
+            </div>
+        </div>
+    </header>
+
+    <div class="page">
+        <aside class="sidebar @(isCollapsed ? "collapsed" : "")" role="navigation" aria-label="Main navigation">
+            <NavMenu IsCollapsed="isCollapsed" />
+        </aside>
+
+        <main class="main @(isCollapsed ? "sidebar-collapsed" : "")" role="main">
+            <div class="content">
+                @Body
+            </div>
+        </main>
     </div>
-
-    <main>
-
-
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
 </div>
 
 <div id="blazor-error-ui" data-nosnippet>
@@ -19,3 +34,20 @@
     <a href="." class="reload">Reload</a>
     <span class="dismiss">🗙</span>
 </div>
+
+@code {
+    private bool isCollapsed = false;
+
+    private void HandleSidebarToggle(bool collapsed)
+    {
+        Console.WriteLine($"HandleSidebarToggle called with: {collapsed}");
+        isCollapsed = collapsed;
+        Console.WriteLine($"MainLayout isCollapsed set to: {isCollapsed}");
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        // Cleanup if needed
+    }
+}

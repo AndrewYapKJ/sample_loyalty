@@ -163,7 +163,9 @@ namespace gussmann_loyalty_program.Services
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                var response = await _httpClient.PostAsync("api/auth/validate", content);
+                // Add timeout to prevent hanging
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                var response = await _httpClient.PostAsync("api/auth/validate", content, cts.Token);
                 var responseContent = await response.Content.ReadAsStringAsync();
 
                 if (response.IsSuccessStatusCode)
@@ -175,12 +177,39 @@ namespace gussmann_loyalty_program.Services
 
                     return validateResponse?.IsValid ?? false;
                 }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    // Token is expired or invalid, try to refresh
+                    _logger.LogInformation("Token validation failed, attempting refresh");
+                    return await TryRefreshTokenAsync();
+                }
 
+                return false;
+            }
+            catch (TaskCanceledException ex) when (ex.InnerException is TimeoutException)
+            {
+                _logger.LogWarning("Token validation timed out");
                 return false;
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error during token validation");
+                return false;
+            }
+        }
+
+        private async Task<bool> TryRefreshTokenAsync()
+        {
+            try
+            {
+                // Get refresh token from local storage via JS interop would be needed here
+                // For now, we'll return false and force re-login
+                _logger.LogInformation("Token refresh needed - redirecting to login");
+                return false;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during automatic token refresh");
                 return false;
             }
         }
