@@ -1,5 +1,4 @@
 ﻿@inherits LayoutComponentBase
-@implements IDisposable
 
 <div class="app-root">
     <header class="topbar" role="banner">
@@ -38,16 +37,14 @@
 @code {
     private bool isCollapsed = false;
 
+    [Inject]
+    private ILogger<MainLayout> Logger { get; set; } = null!;
+
     private void HandleSidebarToggle(bool collapsed)
     {
-        Console.WriteLine($"HandleSidebarToggle called with: {collapsed}");
+        Logger.LogInformation("HandleSidebarToggle called with: {Collapsed}", collapsed);
         isCollapsed = collapsed;
-        Console.WriteLine($"MainLayout isCollapsed set to: {isCollapsed}");
+        Logger.LogInformation("MainLayout isCollapsed set to: {IsCollapsed}", isCollapsed);
         InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
-        // Cleanup if needed
     }
 }

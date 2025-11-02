@@ -1,0 +1,117 @@
+@page "/dashboard"
+@using Gussmann.FrontendServer.Services
+@using gussmann_loyalty_program.Models
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Web
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject IAuthService AuthService
+
+<PageTitle>Dashboard - Gussmann Loyalty Program</PageTitle>
+
+@if (!isAuthenticated)
+{
+   <!-- Show nothing, redirect will happen -->
+}
+else
+{
+   <div class="container-fluid">
+      <div class="row mb-4">
+         <div class="col">
+            <h1 class="display-4">🎯 Loyalty Program Dashboard</h1>
+            <p class="lead">Welcome back! Here's your comprehensive overview</p>
+         </div>
+         <div class="col-auto">
+            <button class="btn btn-outline-danger" @onclick="HandleLogout">
+               <i class="bi bi-box-arrow-right me-2"></i>Logout
+            </button>
+         </div>
+      </div>
+
+      <div class="row g-4 mb-4">
+         <!-- Cards omitted for brevity (demo data used) -->
+         <div class="col-md-3">
+            <div class="card bg-primary text-white h-100">
+               <div class="card-body">
+                  <div class="d-flex justify-content-between">
+                     <div>
+                        <h5 class="card-title">Total Members</h5>
+                        <h2 class="display-6">@totalUsers</h2>
+                        <small>@activeUsers active</small>
+                     </div>
+                     <div class="align-self-center">
+                        <i class="bi bi-people-fill fs-1"></i>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+}
+
+@code {
+   private bool isAuthenticated = false;
+   private int totalUsers = 1250;
+   private int activeUsers = 1180;
+
+   protected override async Task OnAfterRenderAsync(bool firstRender)
+   {
+      if (firstRender)
+      {
+         await CheckAuthentication();
+         if (isAuthenticated)
+         {
+            await LoadDashboardData();
+         }
+         StateHasChanged();
+      }
+   }
+
+   private async Task CheckAuthentication()
+   {
+      try
+      {
+         var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "jwtToken");
+
+         if (string.IsNullOrEmpty(token))
+         {
+            Navigation.NavigateTo("/", true);
+            return;
+         }
+
+         isAuthenticated = await AuthService.ValidateTokenAsync(token);
+
+         if (!isAuthenticated)
+         {
+            Navigation.NavigateTo("/", true);
+         }
+      }
+      catch (Exception ex)
+      {
+         Console.WriteLine($"Authentication error: {ex.Message}");
+         Navigation.NavigateTo("/", true);
+      }
+   }
+
+   private async Task HandleLogout()
+   {
+      try
+      {
+         await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "jwtToken");
+         await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "refreshToken");
+         await JSRuntime.InvokeVoidAsync("localStorage.removeItem", "adminLoggedIn");
+         Navigation.NavigateTo("/", true);
+      }
+      catch
+      {
+         Navigation.NavigateTo("/", true);
+      }
+   }
+
+   private async Task LoadDashboardData()
+   {
+      // Demo data already set; in future this will query NewLoyaltyService
+      await Task.CompletedTask;
+   }
+}
