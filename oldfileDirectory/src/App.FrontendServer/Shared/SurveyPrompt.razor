@@ -1,0 +1,16 @@
+@using Microsoft.AspNetCore.Components
+
+<div class="alert alert-secondary p-3">
+   <h5>How are we doing?</h5>
+   <p class="mb-2">Please take a moment to complete our short survey.</p>
+   <button class="btn btn-sm btn-primary" @onclick="OpenSurvey">Take survey</button>
+</div>
+
+@code {
+   [Parameter] public EventCallback OnTakeSurvey { get; set; }
+
+   private Task OpenSurvey()
+   {
+      return OnTakeSurvey.InvokeAsync(null);
+   }
+}
