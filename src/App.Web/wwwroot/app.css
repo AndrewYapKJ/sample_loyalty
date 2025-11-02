@@ -1,0 +1,12 @@
+/* minimal app.css copied from old frontend */
+:root{
+  --topbar-height:48px;
+  --sidebar-width:240px;
+}
+body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+.app-root{display:flex;flex-direction:column;height:100vh}
+.topbar{height:var(--topbar-height);background:#0b3d91;color:#fff;display:flex;align-items:center}
+.page{display:flex;flex:1;overflow:hidden}
+.sidebar{width:var(--sidebar-width);background:#f8f9fa;overflow:auto}
+.sidebar.collapsed{width:64px}
+.main{flex:1;overflow:auto;padding:1rem}
