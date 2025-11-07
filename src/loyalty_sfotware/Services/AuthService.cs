@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Text;
 
-namespace Gussmann.FrontendServer.Services
+namespace gussmann_loyalty_program.Services
 {
     public class ApiSettings
     {
@@ -53,44 +53,83 @@ namespace Gussmann.FrontendServer.Services
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var loginResponse = JsonSerializer.Deserialize<LoginApiResponse>(responseContent, new JsonSerializerOptions
+                    if (string.IsNullOrWhiteSpace(responseContent))
                     {
-                        PropertyNameCaseInsensitive = true
-                    });
+                        // Successful status but empty body — treat as failure with a clear message
+                        _logger.LogWarning("Login succeeded with empty response body.");
+                        return new AuthResult { Success = false, Message = "Empty response from authentication server." };
+                    }
 
-                    return new AuthResult
+                    try
                     {
-                        Success = loginResponse?.Success ?? false,
-                        Message = loginResponse?.Message ?? "Login successful",
-                        AccessToken = loginResponse?.AccessToken,
-                        RefreshToken = loginResponse?.RefreshToken,
-                        AccessTokenExpiry = loginResponse?.AccessTokenExpiry,
-                        RefreshTokenExpiry = loginResponse?.RefreshTokenExpiry,
-                        Admin = loginResponse?.Admin != null ? new AdminInfo
+                        var loginResponse = JsonSerializer.Deserialize<LoginApiResponse>(responseContent, new JsonSerializerOptions
                         {
-                            Id = loginResponse.Admin.Id,
-                            Username = loginResponse.Admin.Username,
-                            Email = loginResponse.Admin.Email,
-                            FullName = loginResponse.Admin.FullName,
-                            Role = loginResponse.Admin.Role,
-                            IsActive = loginResponse.Admin.IsActive,
-                            CreatedAt = loginResponse.Admin.CreatedAt,
-                            LastLoginAt = loginResponse.Admin.LastLoginAt
-                        } : null
-                    };
+                            PropertyNameCaseInsensitive = true
+                        });
+
+                        if (loginResponse == null)
+                        {
+                            _logger.LogWarning("Login deserialization returned null (empty or invalid JSON). Response: {resp}", responseContent);
+                            return new AuthResult { Success = false, Message = "Invalid response from authentication server." };
+                        }
+
+                        return new AuthResult
+                        {
+                            Success = loginResponse.Success,
+                            Message = loginResponse.Message ?? "Login successful",
+                            AccessToken = loginResponse.AccessToken,
+                            RefreshToken = loginResponse.RefreshToken,
+                            AccessTokenExpiry = loginResponse.AccessTokenExpiry,
+                            RefreshTokenExpiry = loginResponse.RefreshTokenExpiry,
+                            Admin = loginResponse.Admin != null ? new AdminInfo
+                            {
+                                Id = loginResponse.Admin.Id,
+                                Username = loginResponse.Admin.Username,
+                                Email = loginResponse.Admin.Email,
+                                FullName = loginResponse.Admin.FullName,
+                                Role = loginResponse.Admin.Role,
+                                IsActive = loginResponse.Admin.IsActive,
+                                CreatedAt = loginResponse.Admin.CreatedAt,
+                                LastLoginAt = loginResponse.Admin.LastLoginAt
+                            } : null
+                        };
+                    }
+                    catch (JsonException jex)
+                    {
+                        _logger.LogError(jex, "Failed to deserialize login success response: {resp}", responseContent);
+                        return new AuthResult { Success = false, Message = "Invalid JSON response from authentication server." };
+                    }
                 }
                 else
                 {
-                    var errorResponse = JsonSerializer.Deserialize<LoginApiResponse>(responseContent, new JsonSerializerOptions
+                    // Non-success: prefer server-provided message if JSON, otherwise fall back to raw content or reason phrase
+                    if (!string.IsNullOrWhiteSpace(responseContent))
                     {
-                        PropertyNameCaseInsensitive = true
-                    });
+                        try
+                        {
+                            var errorResponse = JsonSerializer.Deserialize<LoginApiResponse>(responseContent, new JsonSerializerOptions
+                            {
+                                PropertyNameCaseInsensitive = true
+                            });
 
-                    return new AuthResult
-                    {
-                        Success = false,
-                        Message = errorResponse?.Message ?? "Login failed"
-                    };
+                            var msg = errorResponse?.Message;
+                            if (!string.IsNullOrWhiteSpace(msg))
+                            {
+                                return new AuthResult { Success = false, Message = msg };
+                            }
+                        }
+                        catch (JsonException)
+                        {
+                            // Not JSON — fall through and return raw content
+                            _logger.LogDebug("Non-JSON error response from auth server: {resp}", responseContent);
+                            return new AuthResult { Success = false, Message = responseContent };
+                        }
+
+                        // If we get here, responseContent was JSON but lacked a Message field
+                        return new AuthResult { Success = false, Message = responseContent };
+                    }
+
+                    return new AuthResult { Success = false, Message = response.ReasonPhrase ?? "Login failed" };
                 }
             }
             catch (Exception ex)

@@ -1,9 +1,9 @@
-using App.Api.DTOs;
-using App.Api.Services;
+using gussmann_loyalty_program.DTOs;
+using gussmann_loyalty_program.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace App.Api.Controllers
+namespace gussmann_loyalty_program.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

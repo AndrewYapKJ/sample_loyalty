@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace App.Api.Controllers
+namespace gussmann_loyalty_program.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

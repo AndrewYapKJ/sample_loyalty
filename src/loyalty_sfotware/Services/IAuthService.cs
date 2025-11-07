@@ -1,7 +1,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace Gussmann.FrontendServer.Services
+namespace gussmann_loyalty_program.Services
 {
     public interface IAuthService
     {

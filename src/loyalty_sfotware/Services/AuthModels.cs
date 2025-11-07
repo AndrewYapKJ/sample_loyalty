@@ -1,6 +1,6 @@
 using System;
 
-namespace Gussmann.FrontendServer.Services
+namespace gussmann_loyalty_program.Services
 {
     public class AuthResult
     {
