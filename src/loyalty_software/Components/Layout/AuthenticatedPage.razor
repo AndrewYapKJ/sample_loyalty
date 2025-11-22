@@ -1,0 +1,68 @@
+@using gussmann_loyalty_program.Services
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject IAuthService AuthService
+@inject ILogger<AuthenticatedPage> Logger
+@rendermode InteractiveServer
+
+@if (!isAuthenticated && !hasCheckedAuth)
+{
+   <div class="d-flex justify-content-center align-items-center vh-100">
+      <div class="spinner-border text-success" role="status">
+         <span class="visually-hidden">Authenticating...</span>
+      </div>
+   </div>
+}
+else if (isAuthenticated)
+{
+   @ChildContent
+}
+
+@code {
+   [Parameter] public RenderFragment? ChildContent { get; set; }
+
+   private bool isAuthenticated = false;
+   private bool hasCheckedAuth = false;
+
+   protected override async Task OnAfterRenderAsync(bool firstRender)
+   {
+      if (firstRender)
+      {
+         await CheckAuthentication();
+         hasCheckedAuth = true;
+         StateHasChanged();
+      }
+   }
+
+   private async Task CheckAuthenticationPreRender()
+   {
+      // Removed - will handle authentication in OnAfterRenderAsync only
+   }
+
+   private async Task CheckAuthentication()
+   {
+      try
+      {
+         var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "jwtToken");
+
+         if (string.IsNullOrEmpty(token))
+         {
+            // No token, redirect immediately
+            Navigation.NavigateTo("/", true);
+            return;
+         }
+
+         isAuthenticated = await AuthService.ValidateTokenAsync(token);
+
+         if (!isAuthenticated)
+         {
+            Navigation.NavigateTo("/admin", true);
+         }
+      }
+      catch (Exception ex)
+      {
+         Logger.LogError(ex, "Authentication check failed");
+         Navigation.NavigateTo("/admin", true);
+      }
+   }
+}

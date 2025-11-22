@@ -1,0 +1,9 @@
+/* Placeholder for scoped CSS bundle. Do not remove unless build generates this file. */
+/* Placeholder app stylesheet to satisfy StaticAssetDevelopmentRuntimeHandler during development.
+   You can replace or expand this file with the real compiled CSS later. */
+
+:root {
+  --app-accent: #1b6ec2;
+}
+
+.app-sidebar { background: #ffffff; }

@@ -1,0 +1,87 @@
+@using gussmann_loyalty_program.Models
+@using Radzen
+@using Radzen.Blazor
+@inject DialogService DialogService
+
+<RadzenStack Gap="1rem">
+   <RadzenRow>
+      <RadzenColumn Size="12">
+         <RadzenLabel Text="Customer ID" />
+         <RadzenTextBox @bind-Value="@Appointment.UserId" Style="width: 100%;" Placeholder="Enter customer ID" />
+      </RadzenColumn>
+   </RadzenRow>
+
+   <RadzenRow>
+      <RadzenColumn Size="12">
+         <RadzenLabel Text="Store ID" />
+         <RadzenTextBox @bind-Value="@Appointment.StoreId" Style="width: 100%;" Placeholder="Enter store ID" />
+      </RadzenColumn>
+   </RadzenRow>
+
+   <RadzenRow>
+      <RadzenColumn Size="12">
+         <RadzenLabel Text="Service ID (Optional)" />
+         <RadzenTextBox @bind-Value="@Appointment.ServiceId" Style="width: 100%;" Placeholder="Enter service ID" />
+      </RadzenColumn>
+   </RadzenRow>
+
+   <RadzenRow>
+      <RadzenColumn Size="12">
+         <RadzenLabel Text="Appointment Date & Time" />
+         <RadzenDatePicker @bind-Value="@Appointment.AppointmentTime" ShowTime="true" DateFormat="dd/MM/yyyy HH:mm" Style="width: 100%;" />
+      </RadzenColumn>
+   </RadzenRow>
+
+   <RadzenRow>
+      <RadzenColumn Size="12">
+         <RadzenLabel Text="Status" />
+         <RadzenDropDown @bind-Value="@Appointment.Status" Data="@statuses" Style="width: 100%;" />
+      </RadzenColumn>
+   </RadzenRow>
+
+   <RadzenRow>
+      <RadzenColumn Size="12">
+         <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" JustifyContent="JustifyContent.End">
+            <RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Light" Click="@Cancel" />
+            <RadzenButton Text="Save" ButtonStyle="ButtonStyle.Primary" Click="@Save" />
+         </RadzenStack>
+      </RadzenColumn>
+   </RadzenRow>
+</RadzenStack>
+
+@code {
+   [Parameter]
+   public Appointment Appointment { get; set; } = new();
+
+   private List<string> statuses = new() { "Scheduled", "Confirmed", "In Progress", "Completed", "Cancelled", "No Show" };
+
+   private void Save()
+   {
+      // Validate required fields
+      if (string.IsNullOrWhiteSpace(Appointment.UserId))
+      {
+         return; // Could add notification here
+      }
+
+      if (string.IsNullOrWhiteSpace(Appointment.StoreId))
+      {
+         return; // Could add notification here
+      }
+
+      // Set defaults if this is a new appointment
+      if (string.IsNullOrEmpty(Appointment.Id))
+      {
+         Appointment.Id = Guid.NewGuid().ToString();
+         Appointment.CreatedAt = DateTime.UtcNow;
+      }
+
+      Appointment.UpdatedAt = DateTime.UtcNow;
+
+      DialogService.Close(Appointment);
+   }
+
+   private void Cancel()
+   {
+      DialogService.Close(null);
+   }
+}

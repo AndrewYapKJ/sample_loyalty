@@ -1,0 +1,207 @@
+@page "/appointments"
+@using gussmann_loyalty_program.Services
+@using gussmann_loyalty_program.Models
+@using Radzen
+@using Radzen.Blazor
+@inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+@inject IAuthService AuthService
+@inject DialogService DialogService
+@inject NotificationService NotificationService
+@rendermode InteractiveServer
+
+<PageTitle>Appointments - Gussmann Loyalty Program</PageTitle>
+
+@if (!isAuthenticated)
+{
+   <!-- Show nothing, redirect will happen -->
+}
+else
+{
+   <RadzenStack Gap="1.5rem">
+      <RadzenRow>
+         <RadzenColumn Size="12">
+            <RadzenText TextStyle="TextStyle.H3" TagName="TagName.H1">
+               <RadzenIcon Icon="calendar_today" Style="vertical-align:middle; margin-right:0.5rem;" />
+               Appointments
+            </RadzenText>
+            <RadzenText TextStyle="TextStyle.Body1" class="rz-color-secondary">
+               Manage customer appointments and bookings
+            </RadzenText>
+         </RadzenColumn>
+      </RadzenRow>
+
+      <RadzenRow>
+         <RadzenColumn Size="12">
+            <RadzenButton Text="Create New Appointment" Icon="add" ButtonStyle="ButtonStyle.Primary"
+               Click="@OpenCreateDialog" />
+         </RadzenColumn>
+      </RadzenRow>
+
+      <RadzenRow>
+         <RadzenColumn Size="12">
+            <RadzenCard>
+               <RadzenDataGrid Data="@appointments" TItem="Appointment" AllowFiltering="true" AllowPaging="true"
+                  PageSize="10" AllowSorting="true">
+                  <Columns>
+                     <RadzenDataGridColumn TItem="Appointment" Property="AppointmentTime" Title="Date & Time"
+                        FormatString="{0:dd/MM/yyyy HH:mm}" Width="180px" />
+                     <RadzenDataGridColumn TItem="Appointment" Property="UserId" Title="Customer" Width="200px" />
+                     <RadzenDataGridColumn TItem="Appointment" Property="StoreId" Title="Store" Width="150px" />
+                     <RadzenDataGridColumn TItem="Appointment" Property="ServiceId" Title="Service" Width="150px" />
+                     <RadzenDataGridColumn TItem="Appointment" Property="Status" Title="Status" Width="120px">
+                        <Template Context="appointment">
+                           <RadzenBadge Text="@appointment.Status" Variant="Variant.Flat"
+                              BadgeStyle="@(appointment.Status == "Scheduled" ? BadgeStyle.Success : 
+                                                                                                                appointment.Status == "Cancelled" ? BadgeStyle.Danger : BadgeStyle.Info)" />
+                        </Template>
+                     </RadzenDataGridColumn>
+                     <RadzenDataGridColumn TItem="Appointment" Title="Actions" Width="120px" Sortable="false"
+                        Filterable="false">
+                        <Template Context="appointment">
+                           <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Small"
+                              Click="@(() => EditAppointment(appointment))" />
+                           <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small"
+                              Click="@(() => DeleteAppointment(appointment))" />
+                        </Template>
+                     </RadzenDataGridColumn>
+                  </Columns>
+               </RadzenDataGrid>
+            </RadzenCard>
+         </RadzenColumn>
+      </RadzenRow>
+   </RadzenStack>
+}
+
+@code {
+   private bool isAuthenticated = false;
+   private List<Appointment> appointments = new();
+
+   protected override async Task OnAfterRenderAsync(bool firstRender)
+   {
+      if (firstRender)
+      {
+         await CheckAuthentication();
+         StateHasChanged();
+      }
+   }
+
+   private async Task CheckAuthentication()
+   {
+      try
+      {
+         var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "jwtToken");
+
+         if (string.IsNullOrEmpty(token))
+         {
+            Navigation.NavigateTo("/", true);
+            return;
+         }
+
+         isAuthenticated = await AuthService.ValidateTokenAsync(token);
+
+         if (!isAuthenticated)
+         {
+            Navigation.NavigateTo("/", true);
+         }
+         else
+         {
+            await LoadAppointments();
+         }
+      }
+      catch (Exception ex)
+      {
+         Console.WriteLine($"Authentication error: {ex.Message}");
+         Navigation.NavigateTo("/", true);
+      }
+   }
+
+   private async Task LoadAppointments()
+   {
+      // Mock data - replace with actual API call
+      appointments = new List<Appointment>
+{
+new Appointment
+{
+Id = Guid.NewGuid().ToString(),
+UserId = "customer-1",
+StoreId = "store-1",
+ServiceId = "service-1",
+AppointmentTime = DateTime.Now.AddDays(2),
+Status = "Scheduled"
+},
+new Appointment
+{
+Id = Guid.NewGuid().ToString(),
+UserId = "customer-2",
+StoreId = "store-1",
+ServiceId = "service-2",
+AppointmentTime = DateTime.Now.AddDays(3),
+Status = "Scheduled"
+}
+};
+      await Task.CompletedTask;
+   }
+
+   private async Task OpenCreateDialog()
+   {
+      var newAppointment = new Appointment
+      {
+         AppointmentTime = DateTime.Now.AddDays(1),
+         Status = "Scheduled"
+      };
+
+      var result = await DialogService.OpenAsync<CreateAppointmentDialog>("Create Appointment",
+      new Dictionary<string, object> { { "Appointment", newAppointment } },
+      new DialogOptions { Width = "600px", Height = "600px", Resizable = true, Draggable = true });
+
+      if (result != null)
+      {
+         await LoadAppointments();
+         NotificationService.Notify(new NotificationMessage
+         {
+            Severity = NotificationSeverity.Success,
+            Summary = "Success",
+            Detail = "Appointment created successfully",
+            Duration = 4000
+         });
+      }
+   }
+
+   private async Task EditAppointment(Appointment appointment)
+   {
+      var result = await DialogService.OpenAsync<CreateAppointmentDialog>("Edit Appointment",
+      new Dictionary<string, object> { { "Appointment", appointment } },
+      new DialogOptions { Width = "600px", Height = "600px", Resizable = true, Draggable = true });
+
+      if (result != null)
+      {
+         await LoadAppointments();
+         NotificationService.Notify(new NotificationMessage
+         {
+            Severity = NotificationSeverity.Success,
+            Summary = "Success",
+            Detail = "Appointment updated successfully",
+            Duration = 4000
+         });
+      }
+   }
+
+   private async Task DeleteAppointment(Appointment appointment)
+   {
+      var confirm = await DialogService.Confirm("Are you sure you want to delete this appointment?", "Delete Appointment",
+      new ConfirmOptions { OkButtonText = "Yes", CancelButtonText = "No" });
+
+      if (confirm == true)
+      {
+         appointments.Remove(appointment);
+         NotificationService.Notify(new NotificationMessage
+         {
+            Severity = NotificationSeverity.Warning,
+            Summary = "Deleted",
+            Detail = "Appointment deleted successfully",
+            Duration = 4000
+         });
+      }
+   }
+}
