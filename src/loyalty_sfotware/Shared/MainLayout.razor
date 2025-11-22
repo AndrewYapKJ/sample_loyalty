@@ -18,22 +18,70 @@
         </div>
     </div>
     <div style="flex:1; display:flex; min-height:calc(100vh - 56px);">
-        <div class="sidebar-wrapper" style="width:@(sidebarExpanded ? "260px" : "70px"); transition:width .3s; overflow:hidden; background: linear-gradient(180deg,#1e4a3b 0%,#0f2419 100%); color:#fff;">
-            <RadzenPanelMenu Style="background:transparent; color:white;" IconColor="white">
-                <RadzenPanelMenuItem Text="Dashboard" Icon="home" Path="/dashboard" />
-                <RadzenPanelMenuItem Text="Counter" Icon="calculate" Path="/counter" />
-                <RadzenPanelMenuItem Text="Weather" Icon="cloud" Path="/weather" />
-                <RadzenPanelMenuItem Text="Members" Icon="people" Path="/members" />
-                <RadzenPanelMenuItem Text="Customers" Icon="person" Path="/customers" />
-                <RadzenPanelMenuItem Text="Transactions" Icon="receipt" Path="/transactions" />
-                <RadzenPanelMenuItem Text="Stores" Icon="store" Path="/stores" />
-                <RadzenPanelMenuItem Text="Campaigns & Vouchers" Icon="campaign" Path="/campaigns" />
-                <RadzenPanelMenuItem Text="Rewards" Icon="card_giftcard" Path="/rewards" />
-                <RadzenPanelMenuItem Text="Loyalty Points" Icon="stars" Path="/loyalty-points" />
-                <RadzenPanelMenuItem Text="Point Manager" Icon="settings" Path="/point-manager" />
-                <RadzenPanelMenuItem Text="Loyalty Accounts" Icon="account_box" Path="/loyalty-accounts" />
-                <RadzenPanelMenuItem Text="Appointments" Icon="event" Path="/appointments" />
-            </RadzenPanelMenu>
+        <div class="sidebar-wrapper @(sidebarExpanded ? "" : "collapsed")" style="width:@(sidebarExpanded ? "260px" : "70px"); transition:width .3s; overflow:@(sidebarExpanded ? "hidden" : "visible"); background: linear-gradient(180deg,#1e4a3b 0%,#0f2419 100%); color:#fff;">
+            @if (sidebarExpanded)
+            {
+                <RadzenPanelMenu Style="background:transparent; color:white;" IconColor="white">
+                    <RadzenPanelMenuItem Text="Dashboard" Icon="home" Path="/dashboard" />
+                    <RadzenPanelMenuItem Text="Counter" Icon="calculate" Path="/counter" />
+                    <RadzenPanelMenuItem Text="Weather" Icon="cloud" Path="/weather" />
+                    <RadzenPanelMenuItem Text="Members" Icon="people" Path="/members" />
+                    <RadzenPanelMenuItem Text="Customers" Icon="person" Path="/customers" />
+                    <RadzenPanelMenuItem Text="Transactions" Icon="receipt" Path="/transactions" />
+                    <RadzenPanelMenuItem Text="Stores" Icon="store" Path="/stores" />
+                    <RadzenPanelMenuItem Text="Campaigns & Vouchers" Icon="campaign" Path="/campaigns" />
+                    <RadzenPanelMenuItem Text="Rewards" Icon="card_giftcard" Path="/rewards" />
+                    <RadzenPanelMenuItem Text="Loyalty Points" Icon="stars" Path="/loyalty-points" />
+                    <RadzenPanelMenuItem Text="Point Manager" Icon="settings" Path="/point-manager" />
+                    <RadzenPanelMenuItem Text="Loyalty Accounts" Icon="account_box" Path="/loyalty-accounts" />
+                    <RadzenPanelMenuItem Text="Appointments" Icon="event" Path="/appointments" />
+                </RadzenPanelMenu>
+            }
+            else
+            {
+                <div class="sidebar-icons">
+                    <RadzenTooltip />
+                    <a href="/dashboard" class="sidebar-icon-item" title="Dashboard">
+                        <RadzenIcon Icon="home" />
+                    </a>
+                    <a href="/counter" class="sidebar-icon-item" title="Counter">
+                        <RadzenIcon Icon="calculate" />
+                    </a>
+                    <a href="/weather" class="sidebar-icon-item" title="Weather">
+                        <RadzenIcon Icon="cloud" />
+                    </a>
+                    <a href="/members" class="sidebar-icon-item" title="Members">
+                        <RadzenIcon Icon="people" />
+                    </a>
+                    <a href="/customers" class="sidebar-icon-item" title="Customers">
+                        <RadzenIcon Icon="person" />
+                    </a>
+                    <a href="/transactions" class="sidebar-icon-item" title="Transactions">
+                        <RadzenIcon Icon="receipt" />
+                    </a>
+                    <a href="/stores" class="sidebar-icon-item" title="Stores">
+                        <RadzenIcon Icon="store" />
+                    </a>
+                    <a href="/campaigns" class="sidebar-icon-item" title="Campaigns & Vouchers">
+                        <RadzenIcon Icon="campaign" />
+                    </a>
+                    <a href="/rewards" class="sidebar-icon-item" title="Rewards">
+                        <RadzenIcon Icon="card_giftcard" />
+                    </a>
+                    <a href="/loyalty-points" class="sidebar-icon-item" title="Loyalty Points">
+                        <RadzenIcon Icon="stars" />
+                    </a>
+                    <a href="/point-manager" class="sidebar-icon-item" title="Point Manager">
+                        <RadzenIcon Icon="settings" />
+                    </a>
+                    <a href="/loyalty-accounts" class="sidebar-icon-item" title="Loyalty Accounts">
+                        <RadzenIcon Icon="account_box" />
+                    </a>
+                    <a href="/appointments" class="sidebar-icon-item" title="Appointments">
+                        <RadzenIcon Icon="event" />
+                    </a>
+                </div>
+            }
         </div>
         <div class="layout-content" style="flex:1; padding:2rem; overflow:auto; background:#fff;">
             @Body
