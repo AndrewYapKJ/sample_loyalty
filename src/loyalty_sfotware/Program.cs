@@ -8,8 +8,17 @@ using System.Text;
 using gussmann_loyalty_program.Models;
 using Microsoft.Extensions.Logging;
 using BCrypt.Net;
+using Microsoft.AspNetCore.Builder;
+// StaticWebAssetsLoader removed: Blazor Server automatically serves package/static assets via MapStaticAssets.
 
 var builder = WebApplication.CreateBuilder(args);
+// Register Radzen services for dialogs, notifications, tooltips, context menus
+builder.Services.AddScoped<Radzen.DialogService>();
+builder.Services.AddScoped<Radzen.NotificationService>();
+builder.Services.AddScoped<Radzen.TooltipService>();
+builder.Services.AddScoped<Radzen.ContextMenuService>();
+
+// (Static web assets loader removed: API not available in current target. Will rely on MapStaticAssets.)
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -89,17 +98,20 @@ builder.Services.AddScoped<LoyaltyService>();
 
 var app = builder.Build();
 
-// If we are using the in-memory dev fallback, seed a known test admin so login
-// can be tested without an external DB. This runs only in Development.
-if (useSqliteDevFallback && app.Environment.IsDevelopment())
+// Static web assets are mapped by app.MapStaticAssets(); no manual loader call required.
+
+// Apply migrations & seed admin user if none exists (works for MSSQL or fallback provider)
+using (var scope = app.Services.CreateScope())
 {
-    using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
     try
     {
         var db = services.GetRequiredService<NewLoyaltyDbContext>();
-
-        // Seed a test admin if none exists. Username: principaltest, password: admin123
+        // Apply migrations automatically when using SQL Server (skip for in-memory)
+        if (!useSqliteDevFallback)
+        {
+            db.Database.Migrate();
+        }
         if (!db.Admins.Any())
         {
             var passwordHash = BCrypt.Net.BCrypt.HashPassword("admin123");
@@ -114,15 +126,14 @@ if (useSqliteDevFallback && app.Environment.IsDevelopment())
             };
             db.Admins.Add(admin);
             db.SaveChanges();
-
             var logger = services.GetRequiredService<ILogger<Program>>();
-            logger.LogInformation("Seeded development admin 'principaltest' with password 'admin123' into in-memory DB.");
+            logger.LogInformation("Seeded admin 'principaltest' (password 'admin123'). Provider: {Provider}", useSqliteDevFallback ? "InMemory" : "SqlServer");
         }
     }
     catch (Exception ex)
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while seeding the development in-memory DB.");
+        logger.LogError(ex, "An error occurred while migrating/seeding the database.");
     }
 }
 
@@ -141,15 +152,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-app.UseAntiforgery();
-
 app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Anti-forgery middleware must be registered after authentication/authorization
-// and before endpoint mappings (MapControllers/MapRazorComponents).
+// Single antiforgery registration (remove duplicate)
 app.UseAntiforgery();
 
 app.MapControllers();
