@@ -1,5 +1,6 @@
+// MudBlazor removed: migrating to Tailwind
 using loyalty_sfotware.Components;
-using gussmann_loyalty_program.Services;
+using loyalty_sfotware.Services; // backend auth & domain services
 using Microsoft.EntityFrameworkCore;
 using gussmann_loyalty_program.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,17 +13,19 @@ using Microsoft.AspNetCore.Builder;
 // StaticWebAssetsLoader removed: Blazor Server automatically serves package/static assets via MapStaticAssets.
 
 var builder = WebApplication.CreateBuilder(args);
-// Register Radzen services for dialogs, notifications, tooltips, context menus
-builder.Services.AddScoped<Radzen.DialogService>();
-builder.Services.AddScoped<Radzen.NotificationService>();
-builder.Services.AddScoped<Radzen.TooltipService>();
-builder.Services.AddScoped<Radzen.ContextMenuService>();
+
+// UI library services removed (using Tailwind instead)
 
 // (Static web assets loader removed: API not available in current target. Will rely on MapStaticAssets.)
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
+// Use legacy Blazor Server model for routing reliability
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+// Enable detailed Blazor Server exceptions to aid debugging during development
+builder.Services.AddServerSideBlazor(options => {
+    options.DetailedErrors = true;
+});
+builder.Services.AddRazorPages();
 
 // Add controllers and DB context (do not run migrations automatically)
 builder.Services.AddControllers();
@@ -91,10 +94,12 @@ builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<LoyaltyService>();
 
     // Register front-end auth service with an HttpClient for calling the API
-    builder.Services.AddHttpClient<gussmann_loyalty_program.Services.IAuthService, gussmann_loyalty_program.Services.AuthService>(client =>
-    {
-        client.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001");
-    });
+builder.Services.AddHttpClient<IAuthService, AuthService>(client =>
+{
+    var configured = builder.Configuration["ApiSettings:BaseUrl"];
+    // Fall back to same origin (server) for unified deployment
+    client.BaseAddress = new Uri(string.IsNullOrWhiteSpace(configured) ? "http://localhost:5000" : configured);
+});
 
 var app = builder.Build();
 
@@ -152,6 +157,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+app.UseStaticFiles();
+
 app.UseRouting();
 
 app.UseAuthentication();
@@ -162,7 +169,7 @@ app.UseAntiforgery();
 
 app.MapControllers();
 app.MapStaticAssets();
-app.MapRazorComponents<global::loyalty_sfotware.Components.App>()
-    .AddInteractiveServerRenderMode();
+app.MapBlazorHub();
+app.MapFallbackToPage("/_Host");
 
 app.Run();

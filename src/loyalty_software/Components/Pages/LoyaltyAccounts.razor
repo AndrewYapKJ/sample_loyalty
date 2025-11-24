@@ -1,6 +1,6 @@
 @page "/loyalty-accounts"
 @using gussmann_loyalty_program.Models
-@using gussmann_loyalty_program.Services
+@using loyalty_sfotware.Services
 @inject LoyaltyService LoyaltyService
 @rendermode InteractiveServer
 
@@ -56,9 +56,8 @@
                         }
                      </td>
                      <td>
-                        <span class="badge @(account.IsActive ? "bg-success" : "bg-danger")">
-                           @(account.IsActive ? "Active" : "Inactive")
-                        </span>
+                        <span
+                           class="badge @GetAccountStatusClass(account.IsActive)">@GetAccountStatusText(account.IsActive)</span>
                      </td>
                   </tr>
                }
@@ -97,7 +96,7 @@
          <div class="card text-center">
             <div class="card-body">
                <h5 class="card-title">Gold+ Tier</h5>
-               <h3 class="text-warning">@(tierCounts["Gold"] + tierCounts["Platinum"])</h3>
+               <h3 class="text-warning">@GoldPlusTierCount</h3>
             </div>
          </div>
       </div>
@@ -121,6 +120,11 @@ else
 { "Gold", 0 },
 { "Platinum", 0 }
 };
+
+   private string GetAccountStatusClass(bool isActive) => isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800";
+   private string GetAccountStatusText(bool isActive) => isActive ? "Active" : "Inactive";
+   private int GoldPlusTierCount => tierCounts.ContainsKey("Gold") && tierCounts.ContainsKey("Platinum") ?
+   tierCounts["Gold"] + tierCounts["Platinum"] : 0;
 
    protected override async Task OnInitializedAsync()
    {

@@ -6,10 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>loyalty_sfotware</AssemblyName>
     <RootNamespace>loyalty_sfotware</RootNamespace>
-    <!-- Reverted to default static web assets pipeline on net9 -->
-    <!-- Mitigation properties for duplicate static web assets error -->
-    <StaticWebAssetsPreserveCompression>false</StaticWebAssetsPreserveCompression>
-    <StaticWebAssetBasePath>loyalty</StaticWebAssetBasePath>
+    <EnableDefaultContentItems>true</EnableDefaultContentItems>
+    <EnableDefaultScopedCssItems>false</EnableDefaultScopedCssItems>
+    <UseRazorBuildServer>false</UseRazorBuildServer>
   </PropertyGroup>
 
 
@@ -23,7 +22,8 @@
     </PackageReference>
   <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
-    <PackageReference Include="Radzen.Blazor" Version="6.0.0" />
+    <!-- Removed UI libraries (MudBlazor/Radzen) - migrating to Tailwind -->
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="9.0.2" />
   </ItemGroup>
 
 </Project>

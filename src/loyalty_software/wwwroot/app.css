@@ -1,19 +1,314 @@
+/* Utility classes for color scheme */
+.bg-primary { background-color: #386A20 !important; }
+.bg-primary-container { background-color: #B7F397 !important; }
+.bg-surface { background-color: #F3F3F3 !important; }
+.bg-surface-high { background-color: #EDEDED !important; }
+.bg-secondary { background-color: #55624C !important; }
+.bg-error { background-color: #BA1A1A !important; }
+.text-primary { color: #386A20 !important; }
+.text-secondary { color: #55624C !important; }
+.text-surface { color: #111111 !important; }
+.text-on-primary { color: #FFFFFF !important; }
+.text-error { color: #BA1A1A !important; }
+body {
+    background-color: #B7F397 !important; /* fallback to primaryContainer */
+    color: #111111 !important; /* fallback to onSurface */
+}
+
+.login-page .rz-card {
+    background: #F3F3F3 !important; /* fallback to surfaceContainer */
+    border: 2px solid #386A20 !important; /* fallback to primary */
+    color: #111111 !important;
+}
+.login-page .rz-button {
+    background: linear-gradient(90deg, #386A20 60%, #55624C 100%) !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
+    border: 2px solid #386A20 !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    box-shadow: 0 2px 8px 0 rgba(56,106,32,0.12) !important;
+    letter-spacing: 1px !important;
+}
+.login-page .rz-inputtext, .login-page .rz-password {
+    background: #F8F8F8 !important; /* fallback to surfaceContainerHigh */
+    color: #111111 !important;
+    border-radius: 8px !important;
+    border: 1.5px solid #B7F397 !important;
+    box-shadow: 0 1px 4px 0 rgba(56,106,32,0.04) !important;
+}
+
+
+/* Force color scheme for login page controls */
+.login-page .rz-card {
+    background: var(--color-surface-container) !important;
+    border: 2px solid var(--color-primary) !important;
+    color: var(--color-on-surface) !important;
+    box-shadow: 0 8px 32px 0 rgba(56,106,32,0.12) !important;
+}
+.login-page .rz-button {
+    background: linear-gradient(90deg, var(--color-primary) 60%, var(--color-secondary) 100%) !important;
+    color: var(--color-on-primary) !important;
+    border-radius: 8px !important;
+    border: 2px solid var(--color-primary) !important;
+    font-weight: 700 !important;
+    font-size: 1.1rem !important;
+    box-shadow: 0 2px 8px 0 rgba(56,106,32,0.12) !important;
+    letter-spacing: 1px !important;
+}
+.login-page .rz-form-field {
+    background: transparent !important;
+    color: var(--color-on-surface) !important;
+}
+.login-page .rz-inputtext, .login-page .rz-password {
+    background: var(--color-surface-container-high) !important;
+    color: var(--color-on-surface) !important;
+    border-radius: 8px !important;
+    border: 1.5px solid var(--color-primary-fixed) !important;
+    box-shadow: 0 1px 4px 0 rgba(56,106,32,0.04) !important;
+}
+.login-page .rz-inputtext:focus, .login-page .rz-password:focus {
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 0 2px var(--color-primary-fixed) !important;
+}
+.login-page .rz-alert {
+    background: var(--color-error-container) !important;
+    color: var(--color-on-error-container) !important;
+    border: 1px solid var(--color-error) !important;
+    border-radius: 8px !important;
+}
+/* Light Theme - Based on FlexColorScheme v8.3.1 */
+:root {
+    /* Primary Colors */
+    --color-primary: #386A20;
+    --color-on-primary: #FFFFFF;
+    --color-primary-container: #B7F397;
+    --color-on-primary-container: #000000;
+    --color-primary-fixed: #D3E4CA;
+    --color-primary-fixed-dim: #ADCA9F;
+    
+    /* Secondary Colors */
+    --color-secondary: #55624C;
+    --color-on-secondary: #FFFFFF;
+    --color-secondary-container: #D9E7CB;
+    --color-on-secondary-container: #000000;
+    --color-secondary-fixed: #DADED7;
+    --color-secondary-fixed-dim: #B8C0B4;
+    
+    /* Tertiary Colors */
+    --color-tertiary: #19686A;
+    --color-on-tertiary: #FFFFFF;
+    --color-tertiary-container: #A8EFF0;
+    --color-on-tertiary-container: #000000;
+    
+    /* Error Colors */
+    --color-error: #BA1A1A;
+    --color-on-error: #FFFFFF;
+    --color-error-container: #FFDAD6;
+    --color-on-error-container: #000000;
+    
+    /* Surface Colors */
+    --color-surface: #FCFCFC;
+    --color-on-surface: #111111;
+    --color-surface-dim: #E0E0E0;
+    --color-surface-bright: #FDFDFD;
+    --color-surface-container-lowest: #FFFFFF;
+    --color-surface-container-low: #F8F8F8;
+    --color-surface-container: #F3F3F3;
+    --color-surface-container-high: #EDEDED;
+    --color-surface-container-highest: #E7E7E7;
+    --color-on-surface-variant: #393939;
+    
+    /* Outline Colors */
+    --color-outline: #919191;
+    --color-outline-variant: #D1D1D1;
+    
+    /* Other Colors */
+    --color-shadow: #000000;
+    --color-scrim: #000000;
+    --color-inverse-surface: #2A2A2A;
+    --color-on-inverse-surface: #F1F1F1;
+    --color-inverse-primary: #BBDEAB;
+    --color-surface-tint: #386A20;
+
+    /* Radzen variable mappings (light) */
+    --rz-primary: var(--color-primary);
+    --rz-secondary: var(--color-secondary);
+    --rz-info: var(--color-tertiary);
+    --rz-danger: var(--color-error);
+    --rz-background-color: var(--color-surface);
+    --rz-text-color: var(--color-on-surface);
+    --rz-border-color: var(--color-outline-variant);
+    --rz-hover-bg: var(--color-surface-container-high);
+    --rz-panel-bg: var(--color-surface-container);
+    --rz-card-bg: var(--color-surface-container);
+    --rz-toolbar-bg: var(--color-primary);
+    --rz-toolbar-color: var(--color-on-primary);
+}
+
+/* Dark Theme - Based on FlexColorScheme v8.3.1 */
+[data-theme="dark"] {
+    /* Primary Colors */
+    --color-primary: #9CD67D;
+    --color-on-primary: #000000;
+    --color-primary-container: #205107;
+    --color-on-primary-container: #FFFFFF;
+    --color-primary-fixed: #D3E4CA;
+    --color-primary-fixed-dim: #ADCA9F;
+    
+    /* Secondary Colors */
+    --color-secondary: #BDCBB0;
+    --color-on-secondary: #000000;
+    --color-secondary-container: #3E4A36;
+    --color-on-secondary-container: #FFFFFF;
+    --color-secondary-fixed: #DADED7;
+    --color-secondary-fixed-dim: #B8C0B4;
+    
+    /* Tertiary Colors */
+    --color-tertiary: #A0CFD0;
+    --color-on-tertiary: #000000;
+    --color-tertiary-container: #1E4E4F;
+    --color-on-tertiary-container: #FFFFFF;
+    
+    /* Error Colors */
+    --color-error: #FFB4AB;
+    --color-on-error: #000000;
+    --color-error-container: #93000A;
+    --color-on-error-container: #FFFFFF;
+    
+    /* Surface Colors */
+    --color-surface: #080808;
+    --color-on-surface: #F1F1F1;
+    --color-surface-dim: #060606;
+    --color-surface-bright: #2C2C2C;
+    --color-surface-container-lowest: #010101;
+    --color-surface-container-low: #0E0E0E;
+    --color-surface-container: #151515;
+    --color-surface-container-high: #1D1D1D;
+    --color-surface-container-highest: #282828;
+    --color-on-surface-variant: #CACACA;
+    
+    /* Outline Colors */
+    --color-outline: #777777;
+    --color-outline-variant: #414141;
+    
+    /* Other Colors */
+    --color-shadow: #000000;
+    --color-scrim: #000000;
+    --color-inverse-surface: #E8E8E8;
+    --color-on-inverse-surface: #2A2A2A;
+    --color-inverse-primary: #48603C;
+    --color-surface-tint: #9CD67D;
+
+    /* Radzen variable mappings (dark) */
+    --rz-primary: var(--color-primary);
+    --rz-secondary: var(--color-secondary);
+    --rz-info: var(--color-tertiary);
+    --rz-danger: var(--color-error);
+    --rz-background-color: var(--color-surface);
+    --rz-text-color: var(--color-on-surface);
+    --rz-border-color: var(--color-outline-variant);
+    --rz-hover-bg: var(--color-surface-container-high);
+    --rz-panel-bg: var(--color-surface-container);
+    --rz-card-bg: var(--color-surface-container);
+    --rz-toolbar-bg: var(--color-primary);
+    --rz-toolbar-color: var(--color-on-primary);
+}
+
+/* Base Styles */
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+    background-color: #ffeedd !important;
+    color: #222 !important;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Sidebar menu item colors */
+.rz-panelmenu-item {
+    background: var(--rz-panel-bg) !important;
+    color: var(--rz-text-color) !important;
+    border-radius: 6px;
+}
+.rz-panelmenu-item.rz-state-active {
+    background: var(--color-primary-container) !important;
+    color: var(--color-on-primary-container) !important;
+}
+.rz-panelmenu-item:hover {
+    background: var(--color-primary-fixed) !important;
+    color: var(--color-on-primary-fixed) !important;
+}
+
+/* Radzen component overrides leveraging mapped variables */
+.rz-card, .rz-panel, .rz-dialog, .rz-grid, .rz-dropdown, .rz-inputtext, .rz-button {
+    background-color: var(--rz-card-bg) !important;
+    color: var(--rz-text-color) !important;
+}
+
+.rz-button.rz-primary, .rz-button.rz-state-active, .rz-button[buttonstyle="Primary"] {
+    background: var(--rz-primary) !important;
+    border-color: var(--rz-primary) !important;
+    color: var(--color-on-primary) !important;
+}
+
+.rz-button.rz-secondary, .rz-button[buttonstyle="Secondary"] {
+    background: var(--rz-secondary) !important;
+    border-color: var(--rz-secondary) !important;
+    color: var(--color-on-secondary) !important;
+}
+
+.rz-button:hover, .rz-button:focus {
+    filter: brightness(1.05);
+}
+
+.rz-toolbar, .topbar {
+    background: var(--rz-toolbar-bg) !important;
+    color: var(--rz-toolbar-color) !important;
+}
+
+.rz-panelmenu, .sidebar-wrapper {
+    background: var(--rz-panel-bg) !important;
+    color: var(--rz-text-color) !important;
+}
+
+.rz-panelmenu .rz-panelmenu-item:hover, .sidebar-icons a:hover {
+    background: var(--rz-hover-bg) !important;
+}
+
+.layout-content {
+    background: var(--rz-background-color) !important;
+    color: var(--rz-text-color) !important;
 }
 
 a, .btn-link {
-    color: #006bb7;
+    color: var(--color-primary);
 }
 
 .btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    color: var(--color-on-primary);
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-container);
+    border-color: var(--color-primary-container);
+    color: var(--color-on-primary-container);
+}
+
+.btn-secondary {
+    color: var(--color-on-secondary);
+    background-color: var(--color-secondary);
+    border-color: var(--color-secondary);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-secondary-container);
+    border-color: var(--color-secondary-container);
+    color: var(--color-on-secondary-container);
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+  box-shadow: 0 0 0 0.1rem var(--color-surface), 0 0 0 0.25rem var(--color-primary);
 }
 
 .content {
@@ -25,21 +320,21 @@ h1:focus {
 }
 
 .valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
+    outline: 1px solid var(--color-primary);
 }
 
 .invalid {
-    outline: 1px solid #e50000;
+    outline: 1px solid var(--color-error);
 }
 
 .validation-message {
-    color: #e50000;
+    color: var(--color-error);
 }
 
 .blazor-error-boundary {
-    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIzNi4wODkgOTMuODA3MkwyMzYuMzM4IDkzLjAxNjIgMjM2Ljg1OCA5Mi4xMzE0IDI1OS40NzMgNTMuNjI5NCAyNTkuOTYxIDUyLjc5ODUgMjYwLjQwNyA1Mi4yNjU4QzI2MS4yIDUxLjQ4MzcgMjYyLjI5NiA1MSAyNjMuNTA2IDUxWk0yNjMuNTg2IDY2LjAxODNDMjYwLjczNyA2Ni4wMTgzIDI1OS4zMTMgNjcuMTI0NSAyNTkuMzEzIDY5LjMzNyAyNTkuMzEzIDY5LjYxMDIgMjU5LjMzMiA2OS44NjA4IDI1OS4zNzEgNzAuMDg4N0wyNjEuNzk1IDg0LjAxNjEgMjY1LjM4IDg0LjAxNjEgMjY3LjgyMSA2OS43NDc1QzI2Ny44NiA2OS43MzA5IDI2Ny44NzkgNjkuNTg3NyAyNjcuODc5IDY5LjMxNzkgMjY3Ljg3OSA2Ny4xMTgyIDI2Ni40NDggNjYuMDE4MyAyNjMuNTg2IDY2LjAxODNaTTI2My41NzYgODYuMDU0N0MyNjEuMDQ5IDg2LjA1NDcgMjU5Ljc4NiA4Ny4zMDA1IDI1OS43ODYgODkuNzkyMSAyNTkuNzg2IDkyLjI4MzcgMjYxLjA0OSA5My41Mjk1IDI2My41NzYgOTMuNTI5NSAyNjYuMTE2IDkzLjUyOTUgMjY3LjM4NyA5Mi4yODM3IDI2Ny4zODcgODkuNzkyMSAyNjcuMzg3IDg3LjMwMDUgMjY2LjExNiA4Ni4wNTQ3IDI2My41NzYgODYuMDU0N1oiIGZpbGw9IiNGRkU1MDAiIGZpbGwtcnVsZT0iZXZlbm9kZCIvPjwvZz48L3N2Zz4=) no-repeat 1rem/1.8rem, #b32121;
+    background: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTYiIGhlaWdodD0iNDkiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIG92ZXJmbG93PSJoaWRkZW4iPjxkZWZzPjxjbGlwUGF0aCBpZD0iY2xpcDAiPjxyZWN0IHg9IjIzNSIgeT0iNTEiIHdpZHRoPSI1NiIgaGVpZ2h0PSI0OSIvPjwvY2xpcFBhdGg+PC9kZWZzPjxnIGNsaXAtcGF0aD0idXJsKCNjbGlwMCkiIHRyYW5zZm9ybT0idHJhbnNsYXRlKC0yMzUgLTUxKSI+PHBhdGggZD0iTTI2My41MDYgNTFDMjY0LjcxNyA1MSAyNjUuODEzIDUxLjQ4MzcgMjY2LjYwNiA1Mi4yNjU4TDI2Ny4wNTIgNTIuNzk4NyAyNjcuNTM5IDUzLjYyODMgMjkwLjE4NSA5Mi4xODMxIDI5MC41NDUgOTIuNzk1IDI5MC42NTYgOTIuOTk2QzI5MC44NzcgOTMuNTEzIDI5MSA5NC4wODE1IDI5MSA5NC42NzgyIDI5MSA5Ny4wNjUxIDI4OS4wMzggOTkgMjg2LjYxNyA5OUwyNDAuMzgzIDk5QzIzNy45NjMgOTkgMjM2IDk3LjA2NTEgMjM2IDk0LjY3ODIgMjM2IDk0LjM3OTkgMjM2LjAzMSA5NC4wODg2IDIyMzYuMDg5IDkzLjgwNzJMMjM2LjMzOCA5My4wMTYyIDIzNi44NTggOTIuMTMxNCAyNTkuNDczIDUzLjYyOTQgMjU5Ljk2MSA1Mi43OTg1IDI2MC40MDcgNTIuMjY1OEMyNjEuMiA1MS40ODM3IDI2Mi4yOTYgNTEgMjYzLjUwNiA1MVpNMjYzLjU4NiA2Ni4wMTgzQzI2MC43MzcgNjYuMDE4MyAyNTkuMzEzIDY3LjEyNDUgMjU5LjMxMyA2OS4zMzcgMjU5LjMxMyA2OS42MTAyIDI1OS4zMzIgNjkuODYwOCAyNTkuMzcxIDcwLjA4ODdMMjYxLjc5NSA4NC4wMTYxIDI2NS4zOCA4NC4wMTYxIDI2Ny44MjEgNjkuNzQ3NUMyNjcuODYgNjkuNzMwOSAyNjcuODc5IDY5LjU4NzcgMjY3Ljg3OSA2OS4zMTc5IDI2Ny44NzkgNjcuMTE4MiAyNjYuNDQ4IDY2LjAxODMgMjYzLjU4NiA2Ni4wMTgzWk0yNjMuNTc2IDg2LjA1NDdDMjYxLjA0OSA4Ni4wNTQ3IDI1OS43ODYgODcuMzAwNSAyNTkuNzg2IDg5Ljc5MjEgMjU5Ljc4NiA5Mi4yODM3IDI2MS4wNDkgOTMuNTI5NSAyNjMuNTc2IDkzLjUyOTUgMjY2LjExNiA5My41Mjk1IDI2Ny4zODcgOTIuMjgzNyAyNjcuMzg3IDg5Ljc5MjEgMjY3LjM4NyA4Ny4zMDA1IDI2Ni4xMTYgODYuMDU0NyAyNjMuNTc2IDg2LjA1NDdaIiBmaWxsPSIjRkZFNTAwIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiLz48L2c+PC9zdmc+) no-repeat 1rem/1.8rem, var(--color-error-container);
     padding: 1rem 1rem 1rem 3.7rem;
-    color: white;
+    color: var(--color-on-error-container);
 }
 
     .blazor-error-boundary::after {
@@ -47,11 +342,11 @@ h1:focus {
     }
 
 .darker-border-checkbox.form-check-input {
-    border-color: #929292;
+    border-color: var(--color-outline);
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-    color: var(--bs-secondary-color);
+    color: var(--color-on-surface-variant);
     text-align: end;
 }
 

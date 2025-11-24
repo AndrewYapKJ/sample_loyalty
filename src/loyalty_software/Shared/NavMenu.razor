@@ -5,7 +5,7 @@
 <!-- Minimal, namespaced NavMenu to avoid global CSS collisions -->
 <div class="app-sidebar">
     <div class="app-sidebar-scroll">
-        <ul class="app-nav-list @(IsCollapsed ? "collapsed" : "")">
+        <ul class="@NavListClass">
             <li class="app-nav-item">
                 <NavLink class="app-nav-link" href="/dashboard" Match="NavLinkMatch.Prefix">
                     <span class="app-icon bi bi-house-door-fill" aria-hidden="true"></span>
@@ -97,6 +97,8 @@
 @code {
     [Inject] private IJSRuntime JSRuntime { get; set; } = null!;
     [Inject] private NavigationManager Navigation { get; set; } = null!;
+
+    private string NavListClass => IsCollapsed ? "app-nav-list collapsed" : "app-nav-list";
 
     [Parameter] public bool IsCollapsed { get; set; }
 

@@ -1,87 +1,64 @@
 @using gussmann_loyalty_program.Models
-@using Radzen
-@using Radzen.Blazor
-@inject DialogService DialogService
 
-<RadzenStack Gap="1rem">
-   <RadzenRow>
-      <RadzenColumn Size="12">
-         <RadzenLabel Text="Customer ID" />
-         <RadzenTextBox @bind-Value="@Appointment.UserId" Style="width: 100%;" Placeholder="Enter customer ID" />
-      </RadzenColumn>
-   </RadzenRow>
-
-   <RadzenRow>
-      <RadzenColumn Size="12">
-         <RadzenLabel Text="Store ID" />
-         <RadzenTextBox @bind-Value="@Appointment.StoreId" Style="width: 100%;" Placeholder="Enter store ID" />
-      </RadzenColumn>
-   </RadzenRow>
-
-   <RadzenRow>
-      <RadzenColumn Size="12">
-         <RadzenLabel Text="Service ID (Optional)" />
-         <RadzenTextBox @bind-Value="@Appointment.ServiceId" Style="width: 100%;" Placeholder="Enter service ID" />
-      </RadzenColumn>
-   </RadzenRow>
-
-   <RadzenRow>
-      <RadzenColumn Size="12">
-         <RadzenLabel Text="Appointment Date & Time" />
-         <RadzenDatePicker @bind-Value="@Appointment.AppointmentTime" ShowTime="true" DateFormat="dd/MM/yyyy HH:mm" Style="width: 100%;" />
-      </RadzenColumn>
-   </RadzenRow>
-
-   <RadzenRow>
-      <RadzenColumn Size="12">
-         <RadzenLabel Text="Status" />
-         <RadzenDropDown @bind-Value="@Appointment.Status" Data="@statuses" Style="width: 100%;" />
-      </RadzenColumn>
-   </RadzenRow>
-
-   <RadzenRow>
-      <RadzenColumn Size="12">
-         <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" JustifyContent="JustifyContent.End">
-            <RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Light" Click="@Cancel" />
-            <RadzenButton Text="Save" ButtonStyle="ButtonStyle.Primary" Click="@Save" />
-         </RadzenStack>
-      </RadzenColumn>
-   </RadzenRow>
-</RadzenStack>
+<div class="bg-white p-4 rounded shadow max-w-md">
+   <h3 class="text-lg font-semibold mb-2">Appointment</h3>
+   <div class="space-y-3">
+      <input class="w-full px-3 py-2 border rounded" @bind="Appointment.UserId" placeholder="Customer ID" />
+      <input class="w-full px-3 py-2 border rounded" @bind="Appointment.StoreId" placeholder="Store ID" />
+      <input class="w-full px-3 py-2 border rounded" @bind="Appointment.ServiceId"
+         placeholder="Service ID (optional)" />
+      <input type="datetime-local" class="w-full px-3 py-2 border rounded" value="@appointmentDateTime"
+         @onchange="OnDateTimeChanged" />
+      <select class="w-full px-3 py-2 border rounded" @bind="Appointment.Status">
+         @foreach (var s in statuses)
+         {
+            <option value="@s">@s</option>
+         }
+      </select>
+      <div class="flex justify-end gap-2">
+         <button class="px-4 py-2 border rounded" @onclick="Cancel">Cancel</button>
+         <button class="px-4 py-2 bg-green-700 text-white rounded" @onclick="Save">Save</button>
+      </div>
+   </div>
+</div>
 
 @code {
    [Parameter]
    public Appointment Appointment { get; set; } = new();
 
+   [Parameter]
+   public EventCallback<Appointment> OnSaved { get; set; }
+
+   [Parameter]
+   public EventCallback OnCancel { get; set; }
+
    private List<string> statuses = new() { "Scheduled", "Confirmed", "In Progress", "Completed", "Cancelled", "No Show" };
-
-   private void Save()
+   private string appointmentDateTime
    {
-      // Validate required fields
-      if (string.IsNullOrWhiteSpace(Appointment.UserId))
-      {
-         return; // Could add notification here
-      }
-
-      if (string.IsNullOrWhiteSpace(Appointment.StoreId))
-      {
-         return; // Could add notification here
-      }
-
-      // Set defaults if this is a new appointment
-      if (string.IsNullOrEmpty(Appointment.Id))
-      {
-         Appointment.Id = Guid.NewGuid().ToString();
-         Appointment.CreatedAt = DateTime.UtcNow;
-      }
-
-      Appointment.UpdatedAt = DateTime.UtcNow;
-
-      DialogService.Close(Appointment);
+      get => Appointment.AppointmentTime == default ? DateTime.Now.ToString("yyyy-MM-ddTHH:mm") :
+      Appointment.AppointmentTime.ToString("yyyy-MM-ddTHH:mm");
+      set { /* setter left intentionally empty; use OnDateTimeChanged to parse */ }
    }
 
-   private void Cancel()
+   private void OnDateTimeChanged(ChangeEventArgs e)
    {
-      DialogService.Close(null);
+      var s = e?.Value?.ToString();
+      if (!string.IsNullOrWhiteSpace(s) && DateTime.TryParse(s, out var dt))
+      {
+         Appointment.AppointmentTime = dt;
+      }
+   }
+
+   private async Task Save()
+   {
+      if (string.IsNullOrWhiteSpace(Appointment.UserId) || string.IsNullOrWhiteSpace(Appointment.StoreId)) return;
+      if (string.IsNullOrEmpty(Appointment.Id)) Appointment.Id = Guid.NewGuid().ToString();
+      Appointment.UpdatedAt = DateTime.UtcNow;
+      await OnSaved.InvokeAsync(Appointment);
+   }
+
+   private async Task Cancel()
+   {
+      await OnCancel.InvokeAsync();
    }
 }

@@ -1,55 +1,57 @@
 @page "/transactions"
 @using gussmann_loyalty_program.Models
-@using gussmann_loyalty_program.Services
+@using loyalty_sfotware.Services
 @inject LoyaltyService LoyaltyService
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 <PageTitle>Transactions - Gussmann Loyalty Program</PageTitle>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Transactions</h1>
-    <button class="btn btn-primary" @onclick="ShowAddTransactionModal">
-        <span class="bi bi-plus-circle"></span> Add Transaction
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold">Transactions</h1>
+    <button class="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 flex items-center gap-2"
+        @onclick="ShowAddTransactionModal">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+        </svg>
+        Add Transaction
     </button>
 </div>
 
 @if (customers != null && customers.Any())
 {
-    <div class="table-responsive">
-        <table class="table table-striped table-hover">
-            <thead class="table-dark">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 bg-white shadow rounded-lg">
+            <thead class="bg-gray-100">
                 <tr>
-                    <th>Transaction #</th>
-                    <th>Customer</th>
-                    <th>Amount</th>
-                    <th>Points Earned</th>
-                    <th>Store</th>
-                    <th>Date</th>
-                    <th>Status</th>
+                    <th class="px-4 py-2 text-left font-semibold">Transaction #</th>
+                    <th class="px-4 py-2 text-left font-semibold">Customer</th>
+                    <th class="px-4 py-2 text-right font-semibold">Amount</th>
+                    <th class="px-4 py-2 text-right font-semibold">Points Earned</th>
+                    <th class="px-4 py-2 text-left font-semibold">Store</th>
+                    <th class="px-4 py-2 text-left font-semibold">Date</th>
+                    <th class="px-4 py-2 text-center font-semibold">Status</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-gray-100">
                 @foreach (var customer in customers)
                 {
                     @foreach (var transaction in customer.Transactions.OrderByDescending(t => t.TransactionDate))
                     {
                         <tr>
-                            <td>@transaction.TransactionNumber</td>
-                            <td>
+                            <td class="px-4 py-2">@transaction.TransactionNumber</td>
+                            <td class="px-4 py-2">
                                 <div>
-                                    <strong>@customer.FirstName @customer.LastName</strong><br />
-                                    <small class="text-muted">@customer.Email</small>
+                                    <span class="font-bold">@customer.FirstName @customer.LastName</span><br />
+                                    <span class="text-xs text-gray-500">@customer.Email</span>
                                 </div>
                             </td>
-                            <td class="text-end">@transaction.Amount.ToString("C")</td>
-                            <td class="text-end text-success">
-                                <strong>@transaction.PointsEarned.ToString("N0")</strong>
-                            </td>
-                            <td>@transaction.Store</td>
-                            <td>@transaction.TransactionDate.ToString("MM/dd/yyyy HH:mm")</td>
-                            <td>
-                                <span class="badge @(transaction.IsProcessed ? "bg-success" : "bg-warning")">
+                            <td class="px-4 py-2 text-right">@transaction.Amount.ToString("C")</td>
+                            <td class="px-4 py-2 text-right text-green-600 font-bold">@transaction.PointsEarned.ToString("N0")</td>
+                            <td class="px-4 py-2">@transaction.Store</td>
+                            <td class="px-4 py-2">@transaction.TransactionDate.ToString("MM/dd/yyyy HH:mm")</td>
+                            <td class="px-4 py-2 text-center">
+                                <span class="px-2 py-1 rounded text-xs font-semibold @GetProcessedClass(transaction.IsProcessed)">
                                     @(transaction.IsProcessed ? "Processed" : "Pending")
                                 </span>
                             </td>
@@ -62,11 +64,15 @@
 }
 else
 {
-    <div class="text-center py-5">
-        <h4 class="text-muted">No transactions found</h4>
-        <p class="text-muted">Get started by adding your first transaction.</p>
-        <button class="btn btn-primary" @onclick="ShowAddTransactionModal">
-            <span class="bi bi-plus-circle"></span> Add Your First Transaction
+    <div class="flex flex-col items-center py-10">
+        <h4 class="text-gray-400 text-lg mb-2">No transactions found</h4>
+        <p class="text-gray-400 mb-4">Get started by adding your first transaction.</p>
+        <button class="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 flex items-center gap-2"
+            @onclick="ShowAddTransactionModal">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+            </svg>
+            Add Your First Transaction
         </button>
     </div>
 }
@@ -74,58 +80,72 @@ else
 <!-- Add Transaction Modal -->
 @if (showModal)
 {
-    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Add New Transaction</h5>
-                    <button type="button" class="btn-close" @onclick="CloseModal"></button>
-                </div>
-                <div class="modal-body">
-                    <EditForm Model="currentTransaction" OnValidSubmit="SaveTransaction">
-                        <DataAnnotationsValidator />
-                        <ValidationSummary class="text-danger" />
+    <div class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+            <div class="flex justify-between items-center border-b px-6 py-4">
+                <h5 class="font-bold text-lg">Add New Transaction</h5>
+                <button type="button" class="text-gray-400 hover:text-gray-600" @onclick="CloseModal">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="px-6 py-4">
+                <EditForm Model="currentTransaction" OnValidSubmit="SaveTransaction">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary class="text-red-500 mb-2" />
 
-                        <div class="mb-3">
-                            <label class="form-label">Customer Email</label>
-                            <InputText class="form-control" @bind-Value="customerEmail" placeholder="Enter customer email" />
-                        </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Customer Email</label>
+                        <InputText class="w-full border rounded px-3 py-2" @bind-Value="customerEmail"
+                            placeholder="Enter customer email" />
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Purchase Amount</label>
-                            <InputNumber class="form-control" @bind-Value="currentTransaction.Amount" step="0.01" />
-                            <ValidationMessage For="@(() => currentTransaction.Amount)" />
-                        </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Purchase Amount</label>
+                        <InputNumber class="w-full border rounded px-3 py-2" @bind-Value="currentTransaction.Amount"
+                            step="0.01" />
+                        <ValidationMessage For="@(() => currentTransaction.Amount)" />
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Store</label>
-                            <InputText class="form-control" @bind-Value="currentTransaction.Store" placeholder="Store name or location" />
-                            <ValidationMessage For="@(() => currentTransaction.Store)" />
-                        </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Store</label>
+                        <InputText class="w-full border rounded px-3 py-2" @bind-Value="currentTransaction.Store"
+                            placeholder="Store name or location" />
+                        <ValidationMessage For="@(() => currentTransaction.Store)" />
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Description</label>
-                            <InputText class="form-control" @bind-Value="currentTransaction.Description" placeholder="Transaction description" />
-                        </div>
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">Description</label>
+                        <InputText class="w-full border rounded px-3 py-2" @bind-Value="currentTransaction.Description"
+                            placeholder="Transaction description" />
+                    </div>
 
-                        <div class="alert alert-info">
-                            <strong>Points Calculation:</strong><br />
-                            Points will be calculated automatically at 1 point per dollar spent.<br />
-                            Amount: @currentTransaction.Amount.ToString("C") = @CalculatePoints(currentTransaction.Amount).ToString("N0") points
-                        </div>
+                    <div class="bg-blue-50 text-blue-700 rounded p-3 mb-4">
+                        <strong>Points Calculation:</strong><br />
+                        Points will be calculated automatically at 1 point per dollar spent.<br />
+                        Amount: @currentTransaction.Amount.ToString("C") =
+                        @CalculatePoints(currentTransaction.Amount).ToString("N0") points
+                    </div>
 
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
-                            <button type="submit" class="btn btn-primary" disabled="@isProcessing">
-                                @if (isProcessing)
-                                {
-                                    <span class="spinner-border spinner-border-sm me-2"></span>
-                                }
-                                Add Transaction
-                            </button>
-                        </div>
-                    </EditForm>
-                </div>
+                    <div class="flex justify-end gap-2 mt-4">
+                        <button type="button" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
+                            @onclick="CloseModal">Cancel</button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 flex items-center gap-2"
+                            disabled="@isProcessing">
+                            @if (isProcessing)
+                            {
+                                <svg xmlns="http://www.w3.org/2000/svg" class="animate-spin h-4 w-4 mr-2" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" />
+                                </svg>
+                            }
+                            Add Transaction
+                        </button>
+                    </div>
+                </EditForm>
             </div>
         </div>
     </div>
@@ -177,14 +197,14 @@ else
             await LoyaltyService.CreateTransactionAsync(currentTransaction);
 
             // Add points to loyalty account
-            await LoyaltyService.AddPointsAsync(customer.Id, currentTransaction.PointsEarned, 
-                $"Purchase transaction {currentTransaction.TransactionNumber}");
+            await LoyaltyService.AddPointsAsync(customer.Id, currentTransaction.PointsEarned,
+            $"Purchase transaction {currentTransaction.TransactionNumber}");
 
             await LoadTransactions();
             CloseModal();
 
-            await JSRuntime.InvokeVoidAsync("alert", 
-                $"Transaction added successfully! {customer.FirstName} {customer.LastName} earned {currentTransaction.PointsEarned:N0} points.");
+            await JSRuntime.InvokeVoidAsync("alert",
+            $"Transaction added successfully! {customer.FirstName} {customer.LastName} earned {currentTransaction.PointsEarned:N0} points.");
         }
         catch (Exception ex)
         {
@@ -208,4 +228,8 @@ else
         // Simple calculation: 1 point per dollar
         return Math.Floor(amount);
     }
+}
+
+@functions {
+    private string GetProcessedClass(bool processed) => processed ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800";
 }

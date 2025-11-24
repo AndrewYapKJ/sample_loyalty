@@ -6,7 +6,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using System.Text;
 
-namespace gussmann_loyalty_program.Services
+namespace loyalty_sfotware.Services
 {
     public class ApiSettings
     {

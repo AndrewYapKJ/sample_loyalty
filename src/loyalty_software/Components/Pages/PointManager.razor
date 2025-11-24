@@ -1,7 +1,7 @@
 @page "/point-manager"
 @using System.ComponentModel.DataAnnotations
 @using gussmann_loyalty_program.Models
-@using gussmann_loyalty_program.Services
+@using loyalty_sfotware.Services
 @inject LoyaltyService LoyaltyService
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -23,7 +23,8 @@
 
                     <div class="mb-3">
                         <label class="form-label">Customer Email</label>
-                        <InputText class="form-control" @bind-Value="addPointsModel.CustomerEmail" placeholder="Enter customer email" />
+                        <InputText class="form-control" @bind-Value="addPointsModel.CustomerEmail"
+                            placeholder="Enter customer email" />
                         <ValidationMessage For="@(() => addPointsModel.CustomerEmail)" />
                     </div>
 
@@ -35,7 +36,8 @@
 
                     <div class="mb-3">
                         <label class="form-label">Description</label>
-                        <InputText class="form-control" @bind-Value="addPointsModel.Description" placeholder="Reason for adding points" />
+                        <InputText class="form-control" @bind-Value="addPointsModel.Description"
+                            placeholder="Reason for adding points" />
                         <ValidationMessage For="@(() => addPointsModel.Description)" />
                     </div>
 
@@ -63,7 +65,8 @@
 
                     <div class="mb-3">
                         <label class="form-label">Customer Email</label>
-                        <InputText class="form-control" @bind-Value="redeemPointsModel.CustomerEmail" placeholder="Enter customer email" />
+                        <InputText class="form-control" @bind-Value="redeemPointsModel.CustomerEmail"
+                            placeholder="Enter customer email" />
                         <ValidationMessage For="@(() => redeemPointsModel.CustomerEmail)" />
                     </div>
 
@@ -75,7 +78,8 @@
 
                     <div class="mb-3">
                         <label class="form-label">Description</label>
-                        <InputText class="form-control" @bind-Value="redeemPointsModel.Description" placeholder="Reason for redeeming points" />
+                        <InputText class="form-control" @bind-Value="redeemPointsModel.Description"
+                            placeholder="Reason for redeeming points" />
                         <ValidationMessage For="@(() => redeemPointsModel.Description)" />
                     </div>
 
@@ -102,7 +106,8 @@
         <div class="row">
             <div class="col-md-6">
                 <div class="input-group">
-                    <InputText class="form-control" @bind-Value="searchEmail" placeholder="Enter customer email to lookup" />
+                    <InputText class="form-control" @bind-Value="searchEmail"
+                        placeholder="Enter customer email to lookup" />
                     <button class="btn btn-outline-secondary" @onclick="LookupCustomer">
                         <span class="bi bi-search"></span> Lookup
                     </button>
@@ -127,11 +132,14 @@
                             <h6>Loyalty Account</h6>
                             <p><strong>Account Number:</strong> @selectedLoyaltyAccount.AccountNumber</p>
                             <p><strong>Current Balance:</strong> @selectedLoyaltyAccount.PointsBalance.ToString("N0") points</p>
-                            <p><strong>Tier Level:</strong> 
-                                <span class="badge @GetTierBadgeClass(selectedLoyaltyAccount.TierLevel)">@selectedLoyaltyAccount.TierLevel</span>
+                            <p><strong>Tier Level:</strong>
+                                <span
+                                    class="badge @GetTierBadgeClass(selectedLoyaltyAccount.TierLevel)">@selectedLoyaltyAccount.TierLevel</span>
                             </p>
-                            <p><strong>Lifetime Earned:</strong> @selectedLoyaltyAccount.LifetimePointsEarned.ToString("N0") points</p>
-                            <p><strong>Lifetime Redeemed:</strong> @selectedLoyaltyAccount.LifetimePointsRedeemed.ToString("N0") points</p>
+                            <p><strong>Lifetime Earned:</strong> @selectedLoyaltyAccount.LifetimePointsEarned.ToString("N0")
+                                points</p>
+                            <p><strong>Lifetime Redeemed:</strong> @selectedLoyaltyAccount.LifetimePointsRedeemed.ToString("N0")
+                                points</p>
                         }
                     </div>
                 </div>
@@ -159,7 +167,7 @@
                                                 @transaction.TransactionType
                                             </span>
                                         </td>
-                                        <td class="@(transaction.Points >= 0 ? "text-success" : "text-danger")">
+                                        <td class="@GetPointsClass(transaction.Points)">
                                             @transaction.Points.ToString("N0")
                                         </td>
                                         <td>@transaction.Description</td>
@@ -178,8 +186,10 @@
     private PointsModel addPointsModel = new();
     private PointsModel redeemPointsModel = new();
     private string searchEmail = string.Empty;
+
+    private string GetPointsClass(decimal points) => points >= 0 ? "text-green-600" : "text-red-600";
     private bool isProcessing = false;
-    
+
     private Customer? selectedCustomer;
     private LoyaltyAccount? selectedLoyaltyAccount;
     private List<PointTransaction> recentTransactions = new();
@@ -215,7 +225,7 @@
             {
                 await JSRuntime.InvokeVoidAsync("alert", $"Successfully added {addPointsModel.Points:N0} points to {customer.FirstName} {customer.LastName}.");
                 addPointsModel = new();
-                
+
                 // Refresh customer data if currently selected
                 if (selectedCustomer?.Id == customer.Id)
                 {
@@ -249,12 +259,13 @@
                 return;
             }
 
-            var success = await LoyaltyService.RedeemPointsAsync(customer.Id, redeemPointsModel.Points, redeemPointsModel.Description);
+            var success = await LoyaltyService.RedeemPointsAsync(customer.Id, redeemPointsModel.Points,
+            redeemPointsModel.Description);
             if (success)
             {
                 await JSRuntime.InvokeVoidAsync("alert", $"Successfully redeemed {redeemPointsModel.Points:N0} points for {customer.FirstName} {customer.LastName}.");
                 redeemPointsModel = new();
-                
+
                 // Refresh customer data if currently selected
                 if (selectedCustomer?.Id == customer.Id)
                 {

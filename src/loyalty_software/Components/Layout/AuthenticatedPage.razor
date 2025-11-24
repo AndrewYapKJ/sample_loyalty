@@ -1,4 +1,4 @@
-@using gussmann_loyalty_program.Services
+@using loyalty_sfotware.Services
 @inject IJSRuntime JSRuntime
 @inject NavigationManager Navigation
 @inject IAuthService AuthService
@@ -56,13 +56,40 @@ else if (isAuthenticated)
 
          if (!isAuthenticated)
          {
-            Navigation.NavigateTo("/admin", true);
+            // Attempt an automatic refresh using the stored refresh token before forcing a redirect
+            try
+            {
+               var refreshToken = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "refreshToken");
+
+               if (!string.IsNullOrEmpty(refreshToken))
+               {
+                  var refreshResult = await AuthService.RefreshTokenAsync(refreshToken);
+                  if (refreshResult != null && refreshResult.Success && !string.IsNullOrEmpty(refreshResult.AccessToken))
+                  {
+                     // Persist new tokens and mark authenticated
+                     await JSRuntime.InvokeVoidAsync("localStorage.setItem", "jwtToken", refreshResult.AccessToken);
+                     if (!string.IsNullOrEmpty(refreshResult.RefreshToken))
+                     {
+                        await JSRuntime.InvokeVoidAsync("localStorage.setItem", "refreshToken", refreshResult.RefreshToken);
+                     }
+
+                     isAuthenticated = true;
+                     return;
+                  }
+               }
+            }
+            catch (Exception ex)
+            {
+               Logger.LogWarning(ex, "Refresh token attempt failed");
+            }
+
+            Navigation.NavigateTo("/", true);
          }
       }
       catch (Exception ex)
       {
          Logger.LogError(ex, "Authentication check failed");
-         Navigation.NavigateTo("/admin", true);
+         Navigation.NavigateTo("/", true);
       }
    }
 }

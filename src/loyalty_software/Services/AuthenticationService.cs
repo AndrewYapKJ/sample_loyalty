@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using gussmann_loyalty_program.DTOs;
 
-namespace gussmann_loyalty_program.Services
+namespace loyalty_sfotware.Services
 {
     public interface IAuthenticationService
     {

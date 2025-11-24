@@ -1,0 +1,235 @@
+/* Core color variables (light and dark) derived from previous theme mapping */
+:root {
+    --color-primary: #386A20;
+    --color-on-primary: #FFFFFF;
+    --color-primary-container: #B7F397;
+    --color-on-primary-container: #000000;
+    --color-primary-fixed: #D3E4CA;
+    --color-primary-fixed-dim: #ADCA9F;
+    
+    --color-secondary: #55624C;
+    --color-on-secondary: #FFFFFF;
+    --color-secondary-container: #D9E7CB;
+    --color-on-secondary-container: #000000;
+    
+    --color-tertiary: #19686A;
+    --color-on-tertiary: #FFFFFF;
+    
+    --color-error: #BA1A1A;
+    --color-on-error: #FFFFFF;
+    
+    --color-surface: #FCFCFC;
+    --color-on-surface: #111111;
+    --color-surface-container: #F3F3F3;
+    --color-surface-container-high: #EDEDED;
+    /* Additional surface / outline variables used across legacy css */
+    --color-surface-dim: #E0E0E0;
+    --color-surface-bright: #FDFDFD;
+    --color-surface-container-lowest: #FFFFFF;
+    --color-surface-container-low: #F8F8F8;
+    --color-surface-container-highest: #E7E7E7;
+    --color-on-surface-variant: #393939;
+
+    /* Outline / shadow */
+    --color-outline: #919191;
+    --color-outline-variant: #D1D1D1;
+    --color-shadow: #000000;
+    --color-scrim: #000000;
+
+    /* Primary fixed helpers */
+    --color-on-primary-fixed: var(--color-on-primary);
+
+    /* Error container */
+    --color-error-container: #FFDAD6;
+    --color-on-error-container: #000000;
+    
+    --rz-primary: var(--color-primary);
+    --rz-secondary: var(--color-secondary);
+    --rz-background-color: var(--color-surface);
+    --rz-text-color: var(--color-on-surface);
+
+    /* Additional Radzen mapping expected in legacy styles */
+    --rz-info: var(--color-tertiary);
+    --rz-danger: var(--color-error);
+    --rz-border-color: var(--color-outline-variant);
+    --rz-hover-bg: var(--color-surface-container-high);
+    --rz-panel-bg: var(--color-surface-container);
+    --rz-card-bg: var(--color-surface-container);
+    --rz-toolbar-bg: var(--color-primary);
+    --rz-toolbar-color: var(--color-on-primary);
+}
+
+[data-theme="dark"] {
+    --color-primary: #9CD67D;
+    --color-on-primary: #000000;
+    --color-primary-container: #205107;
+    --color-on-primary-container: #FFFFFF;
+    --color-secondary: #BDCBB0;
+    --color-on-secondary: #000000;
+    --color-tertiary: #A0CFD0;
+    --color-on-tertiary: #000000;
+    --color-error: #FFB4AB;
+    --color-on-error: #000000;
+    --color-surface: #080808;
+    --color-on-surface: #F1F1F1;
+    --color-surface-container: #151515;
+    --color-surface-container-high: #1D1D1D;
+  /* Dark-mode surface/outlines */
+  --color-surface-dim: #060606;
+  --color-surface-bright: #2C2C2C;
+  --color-surface-container-lowest: #010101;
+  --color-surface-container-low: #0E0E0E;
+  --color-surface-container-highest: #282828;
+  --color-on-surface-variant: #CACACA;
+
+  --color-outline: #777777;
+  --color-outline-variant: #414141;
+  --color-shadow: #000000;
+  --color-scrim: #000000;
+
+  --color-on-primary-fixed: var(--color-on-primary);
+
+  --color-error-container: #93000A;
+  --color-on-error-container: #FFFFFF;
+
+  --rz-info: var(--color-tertiary);
+  --rz-danger: var(--color-error);
+  --rz-border-color: var(--color-outline-variant);
+  --rz-hover-bg: var(--color-surface-container-high);
+  --rz-panel-bg: var(--color-surface-container);
+  --rz-card-bg: var(--color-surface-container);
+  --rz-toolbar-bg: var(--color-primary);
+  --rz-toolbar-color: var(--color-on-primary);
+}
+
+/* Minimal overrides to ensure MudBlazor defaults render correctly */
+html, body {
+  background: var(--color-surface) !important;
+  color: var(--color-on-surface) !important;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif !important;
+}
+
+/* Drawer width variables used by MudBlazor and our layout */
+:root {
+  --mud-drawer-width-left: 260px;
+  --mud-drawer-width-left-mini: 70px;
+  /* Right-side drawer variables (used by new layout) */
+  --mud-drawer-width-right: 260px;
+  --mud-drawer-width-right-mini: 70px;
+  /* App bar height for fixed topbar */
+  --mud-appbar-height: 64px;
+}
+
+/* Ensure MudDrawer sits above main content when open and uses the variable width */
+.mud-drawer {
+  z-index: 1200;
+  /* default to right drawer width when using the right-anchored layout */
+  width: var(--mud-drawer-width-right) !important;
+}
+
+/* Drawer expanded / collapsed (mini) classes applied from layout */
+.mud-drawer.drawer-expanded {
+  width: var(--mud-drawer-width-right) !important;
+  flex: 0 0 var(--mud-drawer-width-right);
+}
+.mud-drawer.drawer-collapsed {
+  width: var(--mud-drawer-width-right-mini) !important;
+  flex: 0 0 var(--mud-drawer-width-right-mini);
+}
+
+/* When appbar is fixed to top, reserve space for it */
+.mud-appbar {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  height: var(--mud-appbar-height);
+}
+
+/* Ensure drawer/container respects the appbar height */
+.mud-drawer-container {
+  margin-top: var(--mud-appbar-height);
+}
+
+/* Push main content left of right-anchored drawer depending on collapsed/expanded state */
+.mud-drawer-container .mud-drawer.drawer-expanded + .mud-main-content {
+  margin-right: var(--mud-drawer-width-right);
+}
+.mud-drawer-container .mud-drawer.drawer-collapsed + .mud-main-content {
+  margin-right: var(--mud-drawer-width-right-mini);
+}
+
+/* Reasonable icon sizing */
+.mud-icon-root {
+  font-size: 1.25rem;
+}
+
+/* Tighter main content padding */
+.mud-main-content {
+  padding: 1rem !important;
+}
+
+/* Login card tweaks */
+.login-page .mud-card {
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+/* Buttons use primary color variable */
+.mud-button-root.mud-filled {
+  background-color: var(--color-primary) !important;
+  color: var(--color-on-primary) !important;
+}
+
+/* Ensure layout uses the full browser viewport and flex correctly so there is no unexpected blank space */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* MudLayout should fill the viewport */
+.mud-layout {
+  min-height: 100vh;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Drawer container must be a flex row so drawer and main content share the space */
+.mud-drawer-container {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0; /* allow children to scroll instead of overflowing */
+}
+
+.mud-drawer {
+  flex: 0 0 var(--mud-drawer-width-left);
+}
+
+.mud-main-content {
+  flex: 1 1 auto;
+  min-height: 0; /* allow internal scrolling */
+  overflow: auto;
+}
+
+/* Ensure inner content doesn't force the layout taller than viewport */
+.mud-main-content > .pa-4 {
+  min-height: 0;
+}
+
+/* Ensure the top app bar participates in normal layout flow and doesn't overlay the drawer/content */
+.mud-appbar {
+  position: relative !important;
+  z-index: 1100;
+}
+
+/* If MudAppBar was fixed by other styles, ensure the drawer container clears it */
+.mud-drawer-container {
+  margin-top: 0; /* appbar is in flow; no extra offset required by default */
+}

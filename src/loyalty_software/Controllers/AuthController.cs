@@ -1,5 +1,5 @@
 using gussmann_loyalty_program.DTOs;
-using gussmann_loyalty_program.Services;
+using loyalty_sfotware.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -106,7 +106,6 @@ namespace gussmann_loyalty_program.Controllers
         }
 
         [HttpPost("logout")]
-        [Authorize]
         public async Task<ActionResult> Logout()
         {
             try
@@ -123,7 +122,6 @@ namespace gussmann_loyalty_program.Controllers
         }
 
         [HttpGet("me")]
-        [Authorize]
         public async Task<ActionResult<AdminDto>> GetCurrentUser()
         {
             try

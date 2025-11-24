@@ -1,15 +1,40 @@
-window.changeTheme = function(theme){
+window.changeTheme = function(theme) {
   try {
     console.log('[Theme] Requested theme:', theme);
-    const el = document.getElementById('radzen-theme');
-    if(!el){
-      console.warn('[Theme] radzen-theme link element not found');
-      return;
+        
+    // Toggle dark theme via data-theme attribute on html element
+    if (theme === 'dark' || theme === 'dark-base') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
+      console.log('[Theme] Applied dark theme');
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('theme', 'light');
+      console.log('[Theme] Applied light theme');
     }
-    const href = `_content/Radzen.Blazor/css/${theme}.css`;
-    el.setAttribute('href', href);
-    console.log('[Theme] Applied href:', href);
-  } catch(e){
+  } catch(e) {
     console.error('[Theme] Error applying theme', e);
   }
 };
+
+// Initialize theme on page load
+window.initializeTheme = function() {
+  try {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      console.log('[Theme] Initialized with dark theme from localStorage');
+    } else {
+      console.log('[Theme] Initialized with light theme (default)');
+    }
+  } catch(e) {
+    console.error('[Theme] Error initializing theme', e);
+  }
+};
+
+// Call initialize on page load
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', window.initializeTheme);
+} else {
+  window.initializeTheme();
+}

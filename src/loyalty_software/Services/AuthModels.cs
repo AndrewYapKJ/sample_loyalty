@@ -1,6 +1,6 @@
 using System;
 
-namespace gussmann_loyalty_program.Services
+namespace loyalty_sfotware.Services
 {
     public class AuthResult
     {

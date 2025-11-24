@@ -1,81 +1,82 @@
+
 @page "/appointments"
-@using gussmann_loyalty_program.Services
+@using loyalty_sfotware.Services
 @using gussmann_loyalty_program.Models
-@using Radzen
-@using Radzen.Blazor
-@inject IJSRuntime JSRuntime
-@inject NavigationManager Navigation
 @inject IAuthService AuthService
-@inject DialogService DialogService
-@inject NotificationService NotificationService
+@inherits loyalty_sfotware.Components.Auth.JwtGuardComponent
 @rendermode InteractiveServer
 
 <PageTitle>Appointments - Gussmann Loyalty Program</PageTitle>
 
 @if (!isAuthenticated)
 {
-   <!-- Show nothing, redirect will happen -->
+   <!-- redirecting to login -->
 }
 else
 {
-   <RadzenStack Gap="1.5rem">
-      <RadzenRow>
-         <RadzenColumn Size="12">
-            <RadzenText TextStyle="TextStyle.H3" TagName="TagName.H1">
-               <RadzenIcon Icon="calendar_today" Style="vertical-align:middle; margin-right:0.5rem;" />
-               Appointments
-            </RadzenText>
-            <RadzenText TextStyle="TextStyle.Body1" class="rz-color-secondary">
-               Manage customer appointments and bookings
-            </RadzenText>
-         </RadzenColumn>
-      </RadzenRow>
+   <div class="space-y-4">
+      <div class="flex items-center justify-between">
+         <div>
+            <h1 class="text-2xl font-semibold">Appointments</h1>
+            <p class="text-sm text-gray-500">Manage customer appointments and bookings</p>
+         </div>
+         <div>
+            <button class="px-4 py-2 bg-green-700 text-white rounded" @onclick="ShowCreate">Create New Appointment</button>
+         </div>
+      </div>
 
-      <RadzenRow>
-         <RadzenColumn Size="12">
-            <RadzenButton Text="Create New Appointment" Icon="add" ButtonStyle="ButtonStyle.Primary"
-               Click="@OpenCreateDialog" />
-         </RadzenColumn>
-      </RadzenRow>
+      <div class="bg-white shadow rounded overflow-auto">
+         <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+               <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date & Time</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Store</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Service</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+               </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+               @foreach (var appt in appointments)
+               {
+                  <tr>
+                     <td class="px-6 py-4 whitespace-nowrap">@appt.AppointmentTime.ToString("dd/MM/yyyy HH:mm")</td>
+                     <td class="px-6 py-4 whitespace-nowrap">@appt.UserId</td>
+                     <td class="px-6 py-4 whitespace-nowrap">@appt.StoreId</td>
+                     <td class="px-6 py-4 whitespace-nowrap">@appt.ServiceId</td>
+                     <td class="px-6 py-4 whitespace-nowrap">
+                        <span
+                           class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full @GetStatusClass(appt.Status)">@appt.Status</span>
+                     </td>
+                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button class="text-indigo-600 hover:text-indigo-900 mr-3"
+                           @onclick="@(() => OnEditAppointment(appt))">Edit</button>
+                        <button class="text-red-600 hover:text-red-900"
+                           @onclick="@(() => OnDeleteAppointment(appt))">Delete</button>
+                     </td>
+                  </tr>
+               }
+            </tbody>
+         </table>
+      </div>
+   </div>
 
-      <RadzenRow>
-         <RadzenColumn Size="12">
-            <RadzenCard>
-               <RadzenDataGrid Data="@appointments" TItem="Appointment" AllowFiltering="true" AllowPaging="true"
-                  PageSize="10" AllowSorting="true">
-                  <Columns>
-                     <RadzenDataGridColumn TItem="Appointment" Property="AppointmentTime" Title="Date & Time"
-                        FormatString="{0:dd/MM/yyyy HH:mm}" Width="180px" />
-                     <RadzenDataGridColumn TItem="Appointment" Property="UserId" Title="Customer" Width="200px" />
-                     <RadzenDataGridColumn TItem="Appointment" Property="StoreId" Title="Store" Width="150px" />
-                     <RadzenDataGridColumn TItem="Appointment" Property="ServiceId" Title="Service" Width="150px" />
-                     <RadzenDataGridColumn TItem="Appointment" Property="Status" Title="Status" Width="120px">
-                        <Template Context="appointment">
-                           <RadzenBadge Text="@appointment.Status" Variant="Variant.Flat"
-                              BadgeStyle="@(appointment.Status == "Scheduled" ? BadgeStyle.Success : 
-                                                                                                                appointment.Status == "Cancelled" ? BadgeStyle.Danger : BadgeStyle.Info)" />
-                        </Template>
-                     </RadzenDataGridColumn>
-                     <RadzenDataGridColumn TItem="Appointment" Title="Actions" Width="120px" Sortable="false"
-                        Filterable="false">
-                        <Template Context="appointment">
-                           <RadzenButton Icon="edit" ButtonStyle="ButtonStyle.Light" Size="ButtonSize.Small"
-                              Click="@(() => EditAppointment(appointment))" />
-                           <RadzenButton Icon="delete" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small"
-                              Click="@(() => DeleteAppointment(appointment))" />
-                        </Template>
-                     </RadzenDataGridColumn>
-                  </Columns>
-               </RadzenDataGrid>
-            </RadzenCard>
-         </RadzenColumn>
-      </RadzenRow>
-   </RadzenStack>
+   @if (showCreateModal)
+   {
+      <div class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+         <div class="bg-white rounded-lg p-6 w-full max-w-lg">
+            <CreateAppointmentDialog Appointment="editingAppointment" OnSaved="OnDialogSaved" OnCancel="CloseDialog" />
+         </div>
+      </div>
+   }
 }
 
 @code {
    private bool isAuthenticated = false;
    private List<Appointment> appointments = new();
+   private bool showCreateModal = false;
+   private Appointment editingAppointment = new();
 
    protected override async Task OnAfterRenderAsync(bool firstRender)
    {
@@ -91,15 +92,12 @@ else
       try
       {
          var token = await JSRuntime.InvokeAsync<string>("localStorage.getItem", "jwtToken");
-
          if (string.IsNullOrEmpty(token))
          {
             Navigation.NavigateTo("/", true);
             return;
          }
-
          isAuthenticated = await AuthService.ValidateTokenAsync(token);
-
          if (!isAuthenticated)
          {
             Navigation.NavigateTo("/", true);
@@ -121,87 +119,78 @@ else
       // Mock data - replace with actual API call
       appointments = new List<Appointment>
 {
-new Appointment
-{
-Id = Guid.NewGuid().ToString(),
-UserId = "customer-1",
-StoreId = "store-1",
-ServiceId = "service-1",
-AppointmentTime = DateTime.Now.AddDays(2),
-Status = "Scheduled"
-},
-new Appointment
-{
-Id = Guid.NewGuid().ToString(),
-UserId = "customer-2",
-StoreId = "store-1",
-ServiceId = "service-2",
-AppointmentTime = DateTime.Now.AddDays(3),
-Status = "Scheduled"
-}
+new Appointment { Id = Guid.NewGuid().ToString(), UserId = "customer-1", StoreId = "store-1", ServiceId = "service-1",
+AppointmentTime = DateTime.Now.AddDays(2), Status = "Scheduled" },
+new Appointment { Id = Guid.NewGuid().ToString(), UserId = "customer-2", StoreId = "store-1", ServiceId = "service-2",
+AppointmentTime = DateTime.Now.AddDays(3), Status = "Scheduled" }
 };
       await Task.CompletedTask;
    }
 
-   private async Task OpenCreateDialog()
+   private void ShowCreate()
    {
-      var newAppointment = new Appointment
-      {
-         AppointmentTime = DateTime.Now.AddDays(1),
-         Status = "Scheduled"
-      };
-
-      var result = await DialogService.OpenAsync<CreateAppointmentDialog>("Create Appointment",
-      new Dictionary<string, object> { { "Appointment", newAppointment } },
-      new DialogOptions { Width = "600px", Height = "600px", Resizable = true, Draggable = true });
-
-      if (result != null)
-      {
-         await LoadAppointments();
-         NotificationService.Notify(new NotificationMessage
-         {
-            Severity = NotificationSeverity.Success,
-            Summary = "Success",
-            Detail = "Appointment created successfully",
-            Duration = 4000
-         });
-      }
+      editingAppointment = new Appointment { AppointmentTime = DateTime.Now.AddDays(1), Status = "Scheduled" };
+      showCreateModal = true;
    }
 
-   private async Task EditAppointment(Appointment appointment)
+   private async Task OnDialogSaved(Appointment appt)
    {
-      var result = await DialogService.OpenAsync<CreateAppointmentDialog>("Edit Appointment",
-      new Dictionary<string, object> { { "Appointment", appointment } },
-      new DialogOptions { Width = "600px", Height = "600px", Resizable = true, Draggable = true });
-
-      if (result != null)
+      // if exists update, else add
+      var existing = appointments.FirstOrDefault(a => a.Id == appt.Id);
+      if (existing != null)
       {
-         await LoadAppointments();
-         NotificationService.Notify(new NotificationMessage
-         {
-            Severity = NotificationSeverity.Success,
-            Summary = "Success",
-            Detail = "Appointment updated successfully",
-            Duration = 4000
-         });
+         var idx = appointments.IndexOf(existing);
+         appointments[idx] = appt;
       }
+      else
+      {
+         appointments.Add(appt);
+      }
+      showCreateModal = false;
+      await InvokeAsync(StateHasChanged);
+   }
+
+   private void CloseDialog()
+   {
+      showCreateModal = false;
+   }
+
+   private void OnEditAppointment(Appointment appointment)
+   {
+      EditAppointment(appointment);
+   }
+
+   private async Task OnDeleteAppointment(Appointment appointment)
+   {
+      await DeleteAppointment(appointment);
+   }
+
+   private void EditAppointment(Appointment appointment)
+   {
+      editingAppointment = new Appointment
+      {
+         Id = appointment.Id,
+         UserId = appointment.UserId,
+         StoreId = appointment.StoreId,
+         ServiceId = appointment.ServiceId,
+         AppointmentTime = appointment.AppointmentTime,
+         Status = appointment.Status
+      };
+      showCreateModal = true;
    }
 
    private async Task DeleteAppointment(Appointment appointment)
    {
-      var confirm = await DialogService.Confirm("Are you sure you want to delete this appointment?", "Delete Appointment",
-      new ConfirmOptions { OkButtonText = "Yes", CancelButtonText = "No" });
-
-      if (confirm == true)
+      var confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this appointment?");
+      if (confirmed)
       {
          appointments.Remove(appointment);
-         NotificationService.Notify(new NotificationMessage
-         {
-            Severity = NotificationSeverity.Warning,
-            Summary = "Deleted",
-            Detail = "Appointment deleted successfully",
-            Duration = 4000
-         });
       }
+   }
+
+   private string GetStatusClass(string status)
+   {
+      return status == "Scheduled" ? "bg-green-100 text-green-800" : status == "Cancelled" ? "bg-red-100 text-red-800" :
+      "bg-blue-100 text-blue-800";
    }
 }

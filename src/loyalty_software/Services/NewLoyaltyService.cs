@@ -2,7 +2,7 @@ using gussmann_loyalty_program.Data;
 using gussmann_loyalty_program.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace gussmann_loyalty_program.Services
+namespace loyalty_sfotware.Services
 {
     public class NewLoyaltyService
     {

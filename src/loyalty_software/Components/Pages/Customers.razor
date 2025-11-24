@@ -1,8 +1,9 @@
+
 @page "/customers"
 @using gussmann_loyalty_program.Models
-@using gussmann_loyalty_program.Services
+@using loyalty_sfotware.Services
 @inject LoyaltyService LoyaltyService
-@inject IJSRuntime JSRuntime
+@inherits loyalty_sfotware.Components.Auth.JwtGuardComponent
 @rendermode InteractiveServer
 
 <PageTitle>Customers - Gussmann Loyalty Program</PageTitle>
@@ -50,15 +51,15 @@
                      }
                   </td>
                   <td>
-                     <span class="badge @(customer.IsActive ? "bg-success" : "bg-danger")">
-                        @(customer.IsActive ? "Active" : "Inactive")
+                     <span class="badge @GetActiveClass(customer.IsActive)">
+                        @GetActiveText(customer.IsActive)
                      </span>
                   </td>
                   <td>
-                     <button class="btn btn-sm btn-outline-primary" @onclick="() => ViewCustomer(customer.Id)">
+                     <button class="btn btn-sm btn-outline-primary" @onclick="@(() => OnViewCustomer(customer.Id))">
                         <span class="bi bi-eye"></span>
                      </button>
-                     <button class="btn btn-sm btn-outline-secondary ms-1" @onclick="() => EditCustomer(customer)">
+                     <button class="btn btn-sm btn-outline-secondary ms-1" @onclick="@(() => OnEditCustomer(customer))">
                         <span class="bi bi-pencil"></span>
                      </button>
                   </td>
@@ -86,7 +87,7 @@ else
       <div class="modal-dialog modal-lg">
          <div class="modal-content">
             <div class="modal-header">
-               <h5 class="modal-title">@(isEditing ? "Edit Customer" : "Add New Customer")</h5>
+               <h5 class="modal-title">@ModalTitle</h5>
                <button type="button" class="btn-close" @onclick="CloseModal"></button>
             </div>
             <div class="modal-body">
@@ -161,7 +162,7 @@ else
                   <div class="modal-footer">
                      <button type="button" class="btn btn-secondary" @onclick="CloseModal">Cancel</button>
                      <button type="submit" class="btn btn-primary">
-                        @(isEditing ? "Update Customer" : "Add Customer")
+                        @SubmitButtonText
                      </button>
                   </div>
                </EditForm>
@@ -176,6 +177,11 @@ else
    private Customer currentCustomer = new();
    private bool showModal = false;
    private bool isEditing = false;
+
+   private string GetActiveClass(bool isActive) => isActive ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800";
+   private string GetActiveText(bool isActive) => isActive ? "Active" : "Inactive";
+   private string ModalTitle => isEditing ? "Edit Customer" : "Add New Customer";
+   private string SubmitButtonText => isEditing ? "Update Customer" : "Add Customer";
 
    protected override async Task OnInitializedAsync()
    {
@@ -192,6 +198,16 @@ else
       currentCustomer = new Customer();
       isEditing = false;
       showModal = true;
+   }
+
+   private async Task OnViewCustomer(int customerId)
+   {
+      await ViewCustomer(customerId);
+   }
+
+   private void OnEditCustomer(Customer customer)
+   {
+      EditCustomer(customer);
    }
 
    private void EditCustomer(Customer customer)
@@ -247,4 +263,8 @@ else
       // TODO: Implement customer detail view
       await JSRuntime.InvokeVoidAsync("alert", $"View customer details for ID: {customerId}");
    }
+}
+
+@functions {
+   // Removed duplicate GetActiveClass; now only one definition exists below with Tailwind classes
 }
